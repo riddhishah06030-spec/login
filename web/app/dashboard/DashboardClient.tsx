@@ -3,12 +3,13 @@
 import Image from "next/image";
 import { FormEvent, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { AuthSession, clearSession, getSession } from "@/lib/auth";
+import { AuthSession, clearSession, getSession, markSkipSplash } from "@/lib/auth";
 import CapsyThumbsUp from "../login/CapsyThumbsUp";
 import loginStyles from "../login/login.module.css";
 import styles from "./dashboard.module.css";
 
-const LOGOUT_HOLD_MS = 2000;
+const LOGOUT_LEAVE_MS = 900;
+const LOGOUT_HOLD_MS = 1400;
 
 const NAV_ITEMS = [
   { id: "dashboard", label: "Dashboard", active: true },
@@ -526,17 +527,18 @@ export default function DashboardClient() {
 
     const leaveTimer = window.setTimeout(() => {
       setLogoutLeaving(true);
-    }, 1400);
+    }, LOGOUT_LEAVE_MS);
 
     const goTimer = window.setTimeout(() => {
-      router.replace("/login");
+      markSkipSplash();
+      window.location.assign("/login");
     }, LOGOUT_HOLD_MS);
 
     return () => {
       window.clearTimeout(leaveTimer);
       window.clearTimeout(goTimer);
     };
-  }, [logoutSuccess, router]);
+  }, [logoutSuccess]);
 
   const initials = useMemo(
     () => (session ? initialsFromName(session.displayName) : "RX"),
@@ -564,7 +566,7 @@ export default function DashboardClient() {
       >
         <div className={loginStyles.successCard}>
           <CapsyThumbsUp
-            className={`${loginStyles.successMascot}${logoutLeaving ? ` ${loginStyles.successMascotLeave}` : ""}`}
+            className={`${loginStyles.successMascot}${logoutLeaving ? ` ${loginStyles.successMascotLeaving}` : ""}`}
           />
           <h2>Logout successful!</h2>
           <p>See you soon…</p>

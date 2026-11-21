@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useEffect, useState } from "react";
+import { consumeSkipSplash } from "@/lib/auth";
 import CapsyShow from "./CapsyShow";
 import LoginForm from "./LoginForm";
 import styles from "./splash.module.css";
@@ -10,12 +11,24 @@ const SPLASH_MS = 5000;
 const PRELOAD_LOGIN_MS = 4200;
 const FADE_MS = 650;
 
+type GateMode = "pending" | "splash" | "ready";
+
 export default function LoginGate() {
+  const [mode, setMode] = useState<GateMode>("pending");
   const [showLogin, setShowLogin] = useState(false);
   const [splashVisible, setSplashVisible] = useState(true);
   const [splashFading, setSplashFading] = useState(false);
 
   useEffect(() => {
+    if (consumeSkipSplash()) {
+      setShowLogin(true);
+      setSplashVisible(false);
+      setMode("ready");
+      return;
+    }
+
+    setMode("splash");
+
     const preloadTimer = window.setTimeout(() => {
       setShowLogin(true);
     }, PRELOAD_LOGIN_MS);
@@ -26,6 +39,7 @@ export default function LoginGate() {
 
     const doneTimer = window.setTimeout(() => {
       setSplashVisible(false);
+      setMode("ready");
     }, SPLASH_MS + FADE_MS);
 
     return () => {
@@ -34,6 +48,10 @@ export default function LoginGate() {
       window.clearTimeout(doneTimer);
     };
   }, []);
+
+  if (mode === "pending") {
+    return <div className={styles.gate} aria-busy="true" />;
+  }
 
   return (
     <div className={styles.gate}>

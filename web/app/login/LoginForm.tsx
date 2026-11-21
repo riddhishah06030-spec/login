@@ -37,7 +37,8 @@ import HeroMascot from "./HeroMascot";
 import styles from "./login.module.css";
 
 const DEFAULT_LOCATION = PHARMACY_LOCATIONS[0]?.id ?? "";
-const SUCCESS_HOLD_MS = 2000;
+const SUCCESS_LEAVE_MS = 1600;
+const SUCCESS_HOLD_MS = 2300;
 
 type Mode = "signin" | "forgot" | "signup";
 type SignInErrorKey = "username" | "password";
@@ -143,7 +144,7 @@ export default function LoginForm() {
 
     const leaveTimer = window.setTimeout(() => {
       setSuccessLeaving(true);
-    }, 1400);
+    }, SUCCESS_LEAVE_MS);
 
     const goTimer = window.setTimeout(() => {
       router.replace("/dashboard");
@@ -326,7 +327,7 @@ export default function LoginForm() {
       >
         <div className={styles.successCard}>
           <CapsyThumbsUp
-            className={`${styles.successMascot}${successLeaving ? ` ${styles.successMascotLeave}` : ""}`}
+            className={`${styles.successMascot}${successLeaving ? ` ${styles.successMascotLeaving}` : ""}`}
           />
           <h2>Login successful!</h2>
           <p>Taking you to your dashboard…</p>

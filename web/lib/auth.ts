@@ -392,6 +392,21 @@ export function clearSession(): void {
   sessionStorage.removeItem(SESSION_KEY);
 }
 
+const SKIP_SPLASH_KEY = "pms.auth.skipSplash";
+
+/** After logout, skip the login splash so the transition doesn't flash CapsyShow. */
+export function markSkipSplash(): void {
+  if (typeof window === "undefined") return;
+  sessionStorage.setItem(SKIP_SPLASH_KEY, "1");
+}
+
+export function consumeSkipSplash(): boolean {
+  if (typeof window === "undefined") return false;
+  const skip = sessionStorage.getItem(SKIP_SPLASH_KEY) === "1";
+  if (skip) sessionStorage.removeItem(SKIP_SPLASH_KEY);
+  return skip;
+}
+
 export function saveRememberedUsername(username: string): void {
   if (typeof window === "undefined") return;
   localStorage.setItem(REMEMBER_KEY, username);
