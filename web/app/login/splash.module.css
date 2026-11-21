@@ -1,0 +1,81 @@
+.gate {
+  position: relative;
+  min-height: 100vh;
+  background: #ffffff;
+}
+
+.loginLayer {
+  min-height: 100vh;
+  opacity: 0;
+  transform: translateY(6px);
+  transition:
+    opacity 0.65s ease,
+    transform 0.65s ease;
+  pointer-events: none;
+}
+
+.loginVisible {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.splashOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  display: grid;
+  place-items: center;
+  background: #ffffff;
+  color: #102a33;
+  opacity: 1;
+  transition: opacity 0.65s ease;
+  will-change: opacity;
+}
+
+.fading {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.mascotWrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  text-align: center;
+  padding: 0.5rem 1.5rem 1.5rem;
+  transition: transform 0.65s ease, opacity 0.65s ease;
+}
+
+.fading .mascotWrap {
+  transform: scale(0.98);
+  opacity: 0.9;
+}
+
+.paused :global(.capsyShow),
+.paused :global(.capsyShow *) {
+  animation-play-state: paused !important;
+}
+
+.brand {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+  margin-top: 0.15rem;
+}
+
+.brandMark {
+  width: clamp(120px, 28vw, 160px);
+  height: auto;
+  display: block;
+}
+
+.brandTag {
+  font-family: var(--font-body), system-ui, sans-serif;
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: #4a6670;
+  letter-spacing: 0.01em;
+}

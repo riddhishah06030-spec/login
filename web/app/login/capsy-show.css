@@ -1,0 +1,388 @@
+.capsyShow {
+  --capsy-ink: #14332a;
+  --capsy-shadow: rgba(20, 51, 42, 0.2);
+  --capsy-track: rgba(20, 51, 42, 0.12);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  user-select: none;
+  color: var(--capsy-ink);
+}
+
+.capsyShow svg {
+  width: min(58vw, 240px);
+  height: auto;
+  overflow: visible;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.capsyShow .bar {
+  width: min(56vw, 220px);
+  height: 6px;
+  border-radius: 8px;
+  background: var(--capsy-track);
+  overflow: hidden;
+  margin-top: 2px;
+}
+
+.capsyShow .bar i {
+  display: block;
+  height: 100%;
+  width: 0;
+  border-radius: 8px;
+  background: linear-gradient(90deg, #1fa074, #5fd4a8);
+  animation: capsy-prog 5s ease-in-out forwards;
+}
+
+@keyframes capsy-prog {
+  0% {
+    width: 3%;
+  }
+  100% {
+    width: 100%;
+  }
+}
+
+.capsyShow #m {
+  animation: capsy-breathe 2.2s ease-in-out infinite;
+  transform-origin: 240px 540px;
+}
+
+@keyframes capsy-breathe {
+  0%,
+  100% {
+    transform: scale(1, 1);
+  }
+  50% {
+    transform: scale(1.02, 0.98);
+  }
+}
+
+.capsyShow #sh {
+  transform-origin: 236px 590px;
+}
+
+.capsyShow #cap {
+  transition: transform 0.5s cubic-bezier(0.3, 1.7, 0.5, 1);
+  transform-origin: 118px 250px;
+}
+
+.capsyShow .arm-r {
+  transform-origin: 358px 302px;
+  transition: transform 0.3s;
+}
+
+.capsyShow .arm-l {
+  transform-origin: 118px 340px;
+  transition: transform 0.3s;
+}
+
+.capsyShow .foot-l {
+  transform-origin: 196px 500px;
+}
+
+.capsyShow .foot-r {
+  transform-origin: 276px 500px;
+}
+
+.capsyShow .eye {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: capsy-blink 3.4s infinite;
+}
+
+@keyframes capsy-blink {
+  0%,
+  92%,
+  100% {
+    transform: scaleY(1);
+  }
+  95% {
+    transform: scaleY(0.1);
+  }
+}
+
+.capsyShow .smile {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.capsyShow .blush {
+  animation: capsy-glow 1.4s ease-in-out infinite;
+}
+
+@keyframes capsy-glow {
+  0%,
+  100% {
+    opacity: 0.65;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.capsyShow .spark,
+.capsyShow .juggle {
+  opacity: 0;
+}
+
+.capsyShow .act-wave .arm-r {
+  animation: capsy-wave 0.45s ease-in-out infinite alternate;
+}
+
+@keyframes capsy-wave {
+  from {
+    transform: rotate(-22deg);
+  }
+  to {
+    transform: rotate(18deg);
+  }
+}
+
+.capsyShow .act-wave .smile {
+  transform: scale(1.2, 1.25);
+}
+
+.capsyShow .act-jump #m {
+  animation: capsy-jump 1.15s ease-in-out infinite;
+}
+
+.capsyShow .act-jump #sh {
+  animation: capsy-jsh 1.15s ease-in-out infinite;
+}
+
+.capsyShow .act-jump .arm-r {
+  transform: rotate(-30deg);
+}
+
+.capsyShow .act-jump .arm-l {
+  transform: rotate(25deg);
+}
+
+@keyframes capsy-jump {
+  0% {
+    transform: translateY(0) scale(1, 1);
+  }
+  15% {
+    transform: translateY(0) scale(1.12, 0.86);
+  }
+  35% {
+    transform: translateY(-70px) scale(0.3, 1.12);
+  }
+  50% {
+    transform: translateY(-125px) scale(-1, 1.05);
+  }
+  70% {
+    transform: translateY(-60px) scale(-0.3, 1.08);
+  }
+  90% {
+    transform: translateY(0) scale(1.12, 0.86);
+  }
+  100% {
+    transform: translateY(0) scale(1, 1);
+  }
+}
+
+@keyframes capsy-jsh {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  15%,
+  90% {
+    transform: scale(1.1);
+  }
+  50% {
+    transform: scale(0.5);
+    opacity: 0.4;
+  }
+}
+
+.capsyShow .act-open #cap {
+  transform: rotate(-34deg) translate(-4px, -8px);
+}
+
+.capsyShow .act-open .eye {
+  transform: scale(1.2);
+}
+
+.capsyShow .act-open #m {
+  animation: capsy-shake 0.12s linear infinite;
+}
+
+@keyframes capsy-shake {
+  0%,
+  100% {
+    transform: translateX(-1px);
+  }
+  50% {
+    transform: translateX(1px);
+  }
+}
+
+.capsyShow .act-open .spark {
+  animation: capsy-fly 1.3s ease-out infinite;
+}
+
+@keyframes capsy-fly {
+  0% {
+    transform: translate(0, 0) scale(0) rotate(0);
+    opacity: 0;
+  }
+  15% {
+    opacity: 1;
+    transform: translate(calc(var(--dx) * 0.2), calc(var(--dy) * 0.2)) scale(1.1)
+      rotate(40deg);
+  }
+  100% {
+    transform: translate(var(--dx), var(--dy)) scale(0.3) rotate(240deg);
+    opacity: 0;
+  }
+}
+
+.capsyShow .act-juggle .juggle {
+  opacity: 1;
+  transition: opacity 0.3s;
+}
+
+.capsyShow .act-juggle .arm-r {
+  animation: capsy-ja 0.5s ease-in-out infinite alternate;
+}
+
+.capsyShow .act-juggle .arm-l {
+  animation: capsy-jb 0.5s ease-in-out infinite alternate;
+}
+
+@keyframes capsy-ja {
+  from {
+    transform: rotate(-30deg);
+  }
+  to {
+    transform: rotate(-8deg);
+  }
+}
+
+@keyframes capsy-jb {
+  from {
+    transform: rotate(30deg);
+  }
+  to {
+    transform: rotate(8deg);
+  }
+}
+
+.capsyShow .jx {
+  animation: capsy-jx 1s linear infinite alternate;
+  animation-delay: var(--d);
+}
+
+.capsyShow .jy {
+  animation: capsy-jy 1s infinite;
+  animation-delay: var(--d);
+}
+
+.capsyShow .jr {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: capsy-jr 0.7s linear infinite;
+}
+
+@keyframes capsy-jx {
+  from {
+    transform: translateX(-105px);
+  }
+  to {
+    transform: translateX(105px);
+  }
+}
+
+@keyframes capsy-jy {
+  0% {
+    transform: translateY(60px);
+    animation-timing-function: ease-out;
+  }
+  50% {
+    transform: translateY(-95px);
+    animation-timing-function: ease-in;
+  }
+  100% {
+    transform: translateY(60px);
+  }
+}
+
+@keyframes capsy-jr {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.capsyShow .act-dance #m {
+  animation: capsy-dance 0.6s ease-in-out infinite alternate;
+}
+
+.capsyShow .act-dance .arm-r {
+  animation: capsy-da 0.3s ease-in-out infinite alternate;
+}
+
+.capsyShow .act-dance .arm-l {
+  animation: capsy-db 0.3s ease-in-out infinite alternate;
+}
+
+.capsyShow .act-dance .foot-l {
+  animation: capsy-step 0.3s ease-in-out infinite;
+}
+
+.capsyShow .act-dance .foot-r {
+  animation: capsy-step 0.3s ease-in-out infinite 0.15s;
+}
+
+.capsyShow .act-dance .smile {
+  transform: scale(1.3, 1.4);
+}
+
+@keyframes capsy-dance {
+  from {
+    transform: rotate(-9deg) translateY(0);
+  }
+  to {
+    transform: rotate(9deg) translateY(-14px);
+  }
+}
+
+@keyframes capsy-da {
+  from {
+    transform: rotate(-40deg);
+  }
+  to {
+    transform: rotate(15deg);
+  }
+}
+
+@keyframes capsy-db {
+  from {
+    transform: rotate(40deg);
+  }
+  to {
+    transform: rotate(-15deg);
+  }
+}
+
+@keyframes capsy-step {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-12px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .capsyShow * {
+    animation-duration: 8s !important;
+  }
+}

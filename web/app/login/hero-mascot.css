@@ -1,0 +1,206 @@
+.heroMascot {
+  --hero-ink: #14332a;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  width: min(100%, 300px);
+  height: 260px;
+  margin: 0 auto;
+  background: transparent;
+  overflow: visible;
+}
+
+.heroMascot svg {
+  width: min(78vw, 240px);
+  height: auto;
+  overflow: visible;
+  align-self: flex-end;
+}
+
+.heroMascot #hm,
+.heroMascot #hk,
+.heroMascot #hb {
+  transform-origin: 246px 470px;
+}
+
+.heroMascot #hb {
+  animation: hero-breathe 2.4s ease-in-out infinite;
+}
+
+@keyframes hero-breathe {
+  0%,
+  100% {
+    transform: scale(1, 1);
+  }
+  50% {
+    transform: scale(1.02, 0.985);
+  }
+}
+
+.heroMascot #hk.bump {
+  animation: hero-bump 0.2s ease-out;
+}
+
+@keyframes hero-bump {
+  50% {
+    transform: translateY(-7px) scale(0.98, 1.03);
+  }
+}
+
+.heroMascot .hbl {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: hero-blink 3.6s infinite;
+}
+
+@keyframes hero-blink {
+  0%,
+  92%,
+  100% {
+    transform: scaleY(1);
+  }
+  95% {
+    transform: scaleY(0.1);
+  }
+}
+
+.heroMascot .look {
+  transform: translate(var(--ex, 0px), var(--ey, 0px));
+  transition: transform 0.18s ease-out;
+}
+
+.heroMascot .hbs {
+  transition: opacity 0.3s;
+}
+
+.heroMascot .hfr {
+  display: none;
+}
+
+/* shoulders tuck into capsule sides */
+.heroMascot .ha {
+  transform-origin: 128px 318px;
+  transition: transform 0.45s cubic-bezier(0.3, 1.4, 0.5, 1);
+}
+
+.heroMascot .ha.r {
+  transform-origin: 364px 300px;
+}
+
+.heroMascot .foot-l {
+  transform-origin: 204px 448px;
+}
+
+.heroMascot .foot-r {
+  transform-origin: 284px 448px;
+}
+
+/* cover eyes with hands */
+.heroMascot .cover .ha.l,
+.heroMascot .peek .ha.l {
+  transform: rotate(-125deg) scale(0.92);
+}
+
+.heroMascot .cover .ha.r {
+  transform: rotate(150deg) scale(0.92);
+}
+
+.heroMascot .peek .ha.r {
+  transform: rotate(108deg) scale(0.92);
+}
+
+/* idle greeting: right hand waves */
+.heroMascot .wave .ha.r {
+  animation: hero-wave 0.48s ease-in-out infinite alternate;
+}
+
+@keyframes hero-wave {
+  from {
+    transform: rotate(-18deg);
+  }
+  to {
+    transform: rotate(22deg);
+  }
+}
+
+.heroMascot .happy .ha.l {
+  transform: rotate(70deg);
+}
+
+.heroMascot .happy .ha.r {
+  transform: rotate(-70deg);
+}
+
+.heroMascot .happy #hm {
+  animation: hero-jump 0.75s ease-in-out 2;
+}
+
+.heroMascot .happy .foot-l {
+  animation: hero-step 0.35s ease-in-out 2;
+}
+
+.heroMascot .happy .foot-r {
+  animation: hero-step 0.35s ease-in-out 2 0.12s;
+}
+
+@keyframes hero-jump {
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+  }
+  20% {
+    transform: translateY(0) scale(1.08, 0.92);
+  }
+  50% {
+    transform: translateY(-42px) scale(0.94, 1.06);
+  }
+}
+
+@keyframes hero-step {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+.heroMascot .sad .hsm {
+  display: none;
+}
+
+.heroMascot .sad .hfr {
+  display: block;
+}
+
+.heroMascot .sad .hbs {
+  opacity: 0.25;
+}
+
+.heroMascot .sad #hm {
+  animation: hero-shake 0.5s ease-in-out 2;
+}
+
+.heroMascot .sad .ha.l {
+  transform: rotate(-18deg);
+}
+
+.heroMascot .sad .ha.r {
+  transform: rotate(22deg);
+}
+
+@keyframes hero-shake {
+  25% {
+    transform: translateX(-8px) rotate(-3deg);
+  }
+  75% {
+    transform: translateX(8px) rotate(3deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .heroMascot * {
+    animation-duration: 8s !important;
+  }
+}
