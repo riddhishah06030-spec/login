@@ -46,10 +46,17 @@ const MULTI_LOCATION_OPTIONS = [
   },
 ] as const;
 
-const DEFAULT_LOCATIONS = [
+type PharmacyLocationItem = {
+  id: string;
+  name: string;
+  place: string;
+  status: string;
+};
+
+const DEFAULT_LOCATIONS: PharmacyLocationItem[] = [
   { id: "main", name: "Main Store", place: "Toronto, ON", status: "Active" },
   { id: "west", name: "West Location", place: "Vancouver, BC", status: "Active" },
-] as const;
+];
 
 const NOTIFICATION_OPTIONS = [
   {
@@ -455,9 +462,8 @@ export default function DashboardClient() {
     refill: true,
     order: true,
   });
-  const [pharmacyLocations, setPharmacyLocations] = useState(
-    DEFAULT_LOCATIONS.map((item) => ({ ...item })),
-  );
+  const [pharmacyLocations, setPharmacyLocations] =
+    useState<PharmacyLocationItem[]>(DEFAULT_LOCATIONS);
   const [showAddLocation, setShowAddLocation] = useState(false);
   const [newLocationName, setNewLocationName] = useState("");
   const [newLocationPlace, setNewLocationPlace] = useState("");
@@ -539,7 +545,7 @@ export default function DashboardClient() {
             <button
               key={item.id}
               type="button"
-              className={`${styles.navItem}${item.active ? ` ${styles.navItemActive}` : ""}`}
+              className={`${styles.navItem}${"active" in item && item.active ? ` ${styles.navItemActive}` : ""}`}
               onClick={() => setNavOpen(false)}
             >
               <span className={styles.navIcon} aria-hidden="true">
