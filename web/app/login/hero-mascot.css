@@ -351,16 +351,16 @@
 
 @media (max-width: 900px) {
   .heroMascot {
-    width: min(100%, 240px);
-    height: 236px;
-    padding-top: 1.15rem;
+    width: min(100%, 28dvh, 180px);
+    height: min(28dvh, 180px);
+    padding-top: 0.55rem;
     box-sizing: border-box;
   }
 
   .heroMascotSvg {
     width: 100%;
     height: auto;
-    max-height: calc(100% - 0.25rem);
+    max-height: calc(100% - 0.15rem);
   }
 
   .heroMascot .cp-hop {
@@ -370,17 +370,17 @@
 
 @media (max-width: 640px) {
   .heroMascot {
-    width: min(100%, 220px);
-    height: 216px;
-    padding-top: 1.2rem;
+    width: min(100%, 24dvh, 168px);
+    height: min(24dvh, 168px);
+    padding-top: 0.5rem;
   }
 }
 
-@media (max-width: 640px) and (max-height: 700px) {
+@media (max-width: 640px) and (max-height: 760px) {
   .heroMascot {
-    width: min(100%, 188px);
-    height: 184px;
-    padding-top: 1rem;
+    width: min(100%, 20dvh, 140px);
+    height: min(20dvh, 140px);
+    padding-top: 0.35rem;
   }
 }
 
