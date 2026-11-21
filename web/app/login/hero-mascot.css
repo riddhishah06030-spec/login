@@ -201,23 +201,34 @@
 
 @media (max-width: 900px) {
   .heroMascot {
-    width: min(100%, 220px);
-    height: 200px;
+    width: min(100%, 152px);
+    height: 136px;
   }
 
   .heroMascot svg {
-    width: min(62vw, 190px);
+    width: min(38vw, 136px);
   }
 }
 
 @media (max-width: 640px) {
   .heroMascot {
-    width: min(100%, 180px);
-    height: 165px;
+    width: min(100%, 120px);
+    height: 108px;
   }
 
   .heroMascot svg {
-    width: min(52vw, 160px);
+    width: min(32vw, 112px);
+  }
+}
+
+@media (max-width: 640px) and (max-height: 700px) {
+  .heroMascot {
+    width: min(100%, 100px);
+    height: 90px;
+  }
+
+  .heroMascot svg {
+    width: min(28vw, 96px);
   }
 }
 

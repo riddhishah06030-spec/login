@@ -8,13 +8,16 @@ import styles from "./dashboard.module.css";
 
 const NAV_ITEMS = [
   { id: "dashboard", label: "Dashboard", active: true },
-  { id: "setup", label: "Pharmacy Setup", hasChildren: true },
-  { id: "locations", label: "Locations" },
-  { id: "users", label: "Users & Roles" },
-  { id: "inventory", label: "Inventory" },
-  { id: "prescriptions", label: "Prescriptions" },
-  { id: "claims", label: "Claims & Billing" },
-  { id: "reports", label: "Reports" },
+  { id: "prescriptions", label: "My Prescriptions" },
+  { id: "refills", label: "Refill Requests" },
+  { id: "appointments", label: "Appointments" },
+  { id: "video", label: "Video Consultation" },
+  { id: "orders", label: "Orders & Delivery" },
+  { id: "history", label: "Medication History" },
+  { id: "messages", label: "Messages" },
+  { id: "insurance", label: "Insurance Info" },
+  { id: "profile", label: "My Profile" },
+  { id: "documents", label: "Documents" },
   { id: "settings", label: "Settings" },
 ] as const;
 
@@ -355,43 +358,6 @@ function NavIcon({ id }: { id: (typeof NAV_ITEMS)[number]["id"] }) {
           <path d="M4 4h7v7H4zM13 4h7v5h-7zM13 11h7v9h-7zM4 13h7v7H4z" fill="currentColor" />
         </svg>
       );
-    case "setup":
-      return (
-        <svg viewBox="0 0 24 24" aria-hidden="true">
-          <path
-            d="M12 8.5a3.5 3.5 0 100 7 3.5 3.5 0 000-7zM4 12h2M18 12h2M12 4v2M12 18v2M6.5 6.5l1.4 1.4M16.1 16.1l1.4 1.4M17.5 6.5l-1.4 1.4M7.9 16.1l-1.4 1.4"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.7"
-            strokeLinecap="round"
-          />
-        </svg>
-      );
-    case "locations":
-      return (
-        <svg viewBox="0 0 24 24" aria-hidden="true">
-          <path
-            d="M12 21s6-5.2 6-10a6 6 0 10-12 0c0 4.8 6 10 6 10z"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.7"
-          />
-          <circle cx="12" cy="11" r="2.2" fill="currentColor" />
-        </svg>
-      );
-    case "users":
-      return (
-        <svg viewBox="0 0 24 24" aria-hidden="true">
-          <circle cx="9" cy="9" r="3" fill="none" stroke="currentColor" strokeWidth="1.7" />
-          <path d="M3.5 19c.8-3 2.8-4.5 5.5-4.5S13.7 16 14.5 19M16 9a2.5 2.5 0 010 5" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
-        </svg>
-      );
-    case "inventory":
-      return (
-        <svg viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M4 8l8-4 8 4v10l-8 4-8-4V8zM4 8l8 4 8-4M12 12v10" fill="none" stroke="currentColor" strokeWidth="1.7" />
-        </svg>
-      );
     case "prescriptions":
       return (
         <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -399,17 +365,81 @@ function NavIcon({ id }: { id: (typeof NAV_ITEMS)[number]["id"] }) {
           <path d="M14 3v4h4M9 12h6M9 16h4" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
         </svg>
       );
-    case "claims":
+    case "refills":
       return (
         <svg viewBox="0 0 24 24" aria-hidden="true">
-          <rect x="4" y="5" width="16" height="14" rx="2" fill="none" stroke="currentColor" strokeWidth="1.7" />
-          <path d="M4 10h16M8 14h4" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
+          <path
+            d="M12 3l7 3v5c0 5-3.5 8.5-7 10-3.5-1.5-7-5-7-10V6l7-3z"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.7"
+          />
+          <path d="M9 12l2 2 4-4" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
         </svg>
       );
-    case "reports":
+    case "appointments":
       return (
         <svg viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M5 19V9M10 19V5M15 19v-7M20 19V8" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
+          <rect x="4" y="5" width="16" height="15" rx="2" fill="none" stroke="currentColor" strokeWidth="1.7" />
+          <path d="M8 3v4M16 3v4M4 10h16" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
+        </svg>
+      );
+    case "video":
+      return (
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <rect x="3" y="7" width="12" height="10" rx="2" fill="none" stroke="currentColor" strokeWidth="1.7" />
+          <path d="M15 10l6-3v10l-6-3v-4z" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round" />
+        </svg>
+      );
+    case "orders":
+      return (
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path
+            d="M3 7h11v10H3zM14 10h4l3 3v4h-7V10zM7 19a1.5 1.5 0 100-3 1.5 1.5 0 000 3zM17 19a1.5 1.5 0 100-3 1.5 1.5 0 000 3z"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.5"
+          />
+        </svg>
+      );
+    case "history":
+      return (
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" strokeWidth="1.7" />
+          <path d="M12 8v4l3 2" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
+        </svg>
+      );
+    case "messages":
+      return (
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <rect x="3" y="5" width="18" height="14" rx="2" fill="none" stroke="currentColor" strokeWidth="1.7" />
+          <path d="M4 7l8 6 8-6" fill="none" stroke="currentColor" strokeWidth="1.7" />
+        </svg>
+      );
+    case "insurance":
+      return (
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path
+            d="M12 3l7 3v5c0 5-3.5 8.5-7 10-3.5-1.5-7-5-7-10V6l7-3z"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.7"
+          />
+          <path d="M12 9v6M9 12h6" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
+        </svg>
+      );
+    case "profile":
+      return (
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="12" cy="9" r="3" fill="none" stroke="currentColor" strokeWidth="1.7" />
+          <path d="M6 19c.9-3 2.9-4.5 6-4.5S17.1 16 18 19" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
+        </svg>
+      );
+    case "documents":
+      return (
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M7 3h7l4 4v14H7V3z" fill="none" stroke="currentColor" strokeWidth="1.7" />
+          <path d="M14 3v4h4M9 12h6M9 16h5" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
         </svg>
       );
     case "settings":
@@ -657,21 +687,29 @@ export default function DashboardClient() {
           </div>
         </section>
 
-        <ol className={styles.progress}>
-          {WIZARD_STEPS.map((item) => (
-            <li
-              key={item.id}
-              className={`${styles.progressItem}${step === item.id ? ` ${styles.progressActive}` : ""}${
-                step > item.id ? ` ${styles.progressDone}` : ""
-              }`}
-            >
-              <button type="button" onClick={() => setStep(item.id)}>
-                <span>{item.id}</span>
-                {item.label}
-              </button>
-            </li>
-          ))}
-        </ol>
+        <div className={styles.progressBlock}>
+          <ol className={styles.progress}>
+            {WIZARD_STEPS.map((item) => (
+              <li
+                key={item.id}
+                className={`${styles.progressItem}${step === item.id ? ` ${styles.progressActive}` : ""}${
+                  step > item.id ? ` ${styles.progressDone}` : ""
+                }`}
+              >
+                <button type="button" onClick={() => setStep(item.id)}>
+                  <span>{item.id}</span>
+                  <em className={styles.progressLabel}>{item.label}</em>
+                </button>
+              </li>
+            ))}
+          </ol>
+          <div className={styles.mobileStepMeta}>
+            <span className={styles.mobileStepCount}>
+              Step {step} of {WIZARD_STEPS.length}
+            </span>
+            <strong>{WIZARD_STEPS[step - 1]?.title}</strong>
+          </div>
+        </div>
 
         <div className={styles.wizardCard}>
           <aside className={styles.stepRail}>
@@ -687,7 +725,7 @@ export default function DashboardClient() {
                       <StepIcon type={item.icon} />
                     </span>
                     <span>
-                      {item.id}. {item.title}
+                      {item.id}. {item.label}
                     </span>
                   </button>
                 </li>

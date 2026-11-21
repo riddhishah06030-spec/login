@@ -33,10 +33,10 @@
 .layout {
   position: relative;
   z-index: 1;
-  width: min(1080px, 100%);
+  width: min(980px, 100%);
   display: grid;
-  grid-template-columns: 1fr minmax(min(100%, 360px), 460px);
-  gap: 2.75rem;
+  grid-template-columns: 1fr minmax(min(100%, 300px), 380px);
+  gap: 2.25rem;
   align-items: center;
 }
 
@@ -80,28 +80,29 @@
 
 .card {
   width: 100%;
+  max-width: 380px;
   background: #ffffff;
-  border-radius: 20px;
-  padding: 1.85rem 1.75rem 1.55rem;
-  box-shadow: 0 16px 40px rgba(20, 96, 71, 0.12);
+  border-radius: 16px;
+  padding: 1.25rem 1.2rem 1.15rem;
+  box-shadow: 0 12px 30px rgba(20, 96, 71, 0.1);
   border: 1px solid rgba(210, 232, 222, 0.9);
 }
 
 .cardBrand {
   display: flex;
   align-items: center;
-  gap: 0.6rem;
-  margin-bottom: 1rem;
+  gap: 0.5rem;
+  margin-bottom: 0.7rem;
 }
 
 .cardMark {
-  width: 2.25rem;
+  width: 1.9rem;
   height: auto;
   display: block;
 }
 
 .cardBrandName {
-  font-size: 1.15rem;
+  font-size: 1.02rem;
   font-weight: 750;
   color: #146047;
   letter-spacing: -0.02em;
@@ -112,27 +113,27 @@
 }
 
 .card h2 {
-  font-size: 1.5rem;
+  font-size: 1.22rem;
   font-weight: 750;
   letter-spacing: -0.02em;
   color: #163a4a;
-  margin-bottom: 1.25rem;
+  margin-bottom: 0.9rem;
 }
 
 .form {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 0.75rem;
 }
 
 .field {
   display: flex;
   flex-direction: column;
-  gap: 0.4rem;
+  gap: 0.3rem;
 }
 
 .field label {
-  font-size: 0.9rem;
+  font-size: 0.82rem;
   font-weight: 650;
   color: #2a5651;
 }
@@ -140,11 +141,11 @@
 .field input {
   width: 100%;
   border: 1px solid #d4e4df;
-  border-radius: 12px;
+  border-radius: 10px;
   background: #ffffff;
   color: #102a33;
-  font-size: 1rem;
-  padding: 0.88rem 1rem;
+  font-size: 0.92rem;
+  padding: 0.7rem 0.85rem;
   outline: none;
 }
 
@@ -173,8 +174,8 @@
 }
 
 .inputWithIcon input {
-  padding-left: 2.55rem;
-  padding-right: 2.7rem;
+  padding-left: 2.3rem;
+  padding-right: 2.4rem;
 }
 
 .inputIcon {
@@ -226,8 +227,8 @@
 .remember {
   display: flex;
   align-items: center;
-  gap: 0.45rem;
-  font-size: 0.92rem;
+  gap: 0.4rem;
+  font-size: 0.82rem;
   color: #355561;
 }
 
@@ -241,7 +242,7 @@
   border: none;
   background: none;
   padding: 0;
-  font-size: 0.92rem;
+  font-size: 0.82rem;
   color: #1aa07a;
   font-weight: 700;
   cursor: pointer;
@@ -255,6 +256,13 @@
   margin: 0;
   font-size: 0.9rem;
   line-height: 1.45;
+  color: #4a6670;
+}
+
+.accountPrompt {
+  margin: 0.05rem 0 0;
+  text-align: center;
+  font-size: 0.82rem;
   color: #4a6670;
 }
 
@@ -283,16 +291,16 @@
 }
 
 .submit {
-  margin-top: 0.25rem;
+  margin-top: 0.1rem;
   border: none;
-  border-radius: 12px;
+  border-radius: 10px;
   background: #1aa07a;
   color: #ffffff;
-  font-size: 1.05rem;
+  font-size: 0.95rem;
   font-weight: 750;
-  padding: 0.98rem 1.1rem;
+  padding: 0.78rem 1rem;
   cursor: pointer;
-  box-shadow: 0 8px 18px rgba(26, 160, 122, 0.28);
+  box-shadow: 0 6px 14px rgba(26, 160, 122, 0.24);
 }
 
 .submit:hover {
@@ -325,21 +333,21 @@
 .ssoRow {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 0.7rem;
+  gap: 0.5rem;
 }
 
 .ssoBtn {
   display: flex;
   align-items: center;
   justify-content: flex-start;
-  gap: 0.55rem;
-  min-height: 3.15rem;
-  padding: 0.55rem 0.7rem;
+  gap: 0.4rem;
+  min-height: 2.55rem;
+  padding: 0.45rem 0.55rem;
   border: 1px solid #cfe0ef;
-  border-radius: 12px;
+  border-radius: 10px;
   background: #ffffff;
   color: #163a4a;
-  font-size: 0.8rem;
+  font-size: 0.72rem;
   font-weight: 700;
   line-height: 1.2;
   text-align: left;
@@ -347,7 +355,7 @@
 }
 
 .ssoBtn > span:last-child {
-  max-width: 7.2rem;
+  max-width: 6.4rem;
 }
 
 .ssoBtn:hover {
@@ -603,34 +611,50 @@
 
 @media (max-width: 900px) {
   .shell {
-    padding:
-      calc(1rem + var(--safe-top, 0px))
-      calc(0.85rem + var(--safe-right, 0px))
-      calc(1.25rem + var(--safe-bottom, 0px))
-      calc(0.85rem + var(--safe-left, 0px));
-    align-items: start;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: stretch;
+    place-items: unset;
     overflow-x: hidden;
     overflow-y: auto;
+    padding:
+      calc(1rem + var(--safe-top, 0px))
+      calc(1.2rem + var(--safe-right, 0px))
+      calc(1.2rem + var(--safe-bottom, 0px))
+      calc(1.2rem + var(--safe-left, 0px));
   }
 
   .layout {
-    grid-template-columns: 1fr;
-    gap: 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    grid-template-columns: unset;
+    gap: 0.85rem;
     width: 100%;
+    max-width: 400px;
+    margin: 0 auto;
   }
 
   .hero {
     order: 0;
-    padding: 0.15rem 0.25rem 0;
+    padding: 0;
+    flex-shrink: 0;
   }
 
   .hero h1 {
-    font-size: clamp(1.45rem, 6vw, 1.85rem);
+    font-size: clamp(1.35rem, 5vw, 1.6rem);
+    margin-bottom: 0.2rem;
   }
 
   .hero p {
-    font-size: 0.9rem;
-    max-width: 16rem;
+    font-size: 0.84rem;
+    max-width: 17rem;
+    margin: 0 auto;
+  }
+
+  .mascot {
+    margin-bottom: 0.15rem;
   }
 
   .cardWrap {
@@ -639,93 +663,249 @@
   }
 
   .card {
-    padding: 1.35rem 1.15rem 1.25rem;
-    border-radius: 16px;
-  }
-
-  .card h2 {
-    font-size: 1.28rem;
-    margin-bottom: 1rem;
-  }
-
-  .field input,
-  .inputWithIcon input {
-    padding-top: 0.82rem;
-    padding-bottom: 0.82rem;
-  }
-}
-
-@media (max-width: 640px) {
-  .shell {
-    padding: 0.75rem 0.7rem 1.1rem;
-    place-items: stretch;
-  }
-
-  .layout {
-    gap: 0.65rem;
-  }
-
-  .hero {
-    margin-bottom: 0.15rem;
-  }
-
-  .mascot {
-    margin-bottom: 0.2rem;
-  }
-
-  .card {
-    padding: 1.15rem 0.95rem 1.1rem;
-    box-shadow: 0 10px 28px rgba(20, 96, 71, 0.1);
-  }
-
-  .cardBrand {
-    margin-bottom: 0.75rem;
-  }
-
-  .cardBrandName {
-    font-size: 1.05rem;
+    max-width: none;
+    width: 100%;
+    margin: 0;
+    padding: 1.35rem 1.2rem 1.25rem;
+    border-radius: 18px;
   }
 
   .card h2 {
     font-size: 1.18rem;
+    margin-bottom: 0.9rem;
   }
 
   .form {
     gap: 0.85rem;
   }
 
+  .field input {
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
   .ssoRow {
+    grid-template-columns: 1fr;
     gap: 0.55rem;
   }
 
-  .forgotHint {
+  .ssoBtn {
+    min-height: 2.75rem;
+    justify-content: center;
+    font-size: 0.86rem;
+    padding: 0.65rem 0.85rem;
+  }
+
+  .ssoBtn > span:last-child {
+    max-width: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .shell {
+    padding:
+      calc(0.85rem + var(--safe-top, 0px))
+      calc(1.15rem + var(--safe-right, 0px))
+      calc(1.1rem + var(--safe-bottom, 0px))
+      calc(1.15rem + var(--safe-left, 0px));
+  }
+
+  .layout {
+    gap: 0.7rem;
+    max-width: 370px;
+  }
+
+  .hero h1 {
+    font-size: 1.28rem;
+    margin-bottom: 0.12rem;
+  }
+
+  .hero p {
+    display: none;
+  }
+
+  .card {
+    padding: 1.2rem 1.1rem 1.15rem;
+    border-radius: 18px;
+    box-shadow: 0 12px 28px rgba(20, 96, 71, 0.11);
+  }
+
+  .cardBrand {
+    margin-bottom: 0.5rem;
+  }
+
+  .cardMark {
+    width: 1.7rem;
+  }
+
+  .cardBrandName {
+    font-size: 0.98rem;
+  }
+
+  .card h2 {
+    font-size: 1.1rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .form {
+    gap: 0.75rem;
+  }
+
+  .field {
+    gap: 0.35rem;
+  }
+
+  .field label {
+    font-size: 0.82rem;
+  }
+
+  .field input,
+  .inputWithIcon input {
+    font-size: 16px;
+    padding-top: 0.78rem;
+    padding-bottom: 0.78rem;
+    min-height: 2.85rem;
+  }
+
+  .row {
+    gap: 0.5rem;
+    flex-wrap: nowrap;
+    margin-top: 0.05rem;
+  }
+
+  .remember,
+  .forgot,
+  .accountPrompt {
+    font-size: 0.82rem;
+  }
+
+  .submit {
+    font-size: 0.95rem;
+    padding: 0.85rem 1rem;
+    margin-top: 0.1rem;
+    min-height: 2.85rem;
+  }
+
+  .ssoDivider {
+    margin: 0.15rem 0;
     font-size: 0.78rem;
   }
 
+  .ssoRow {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+
+  .ssoBtn {
+    width: 100%;
+    min-height: 2.7rem;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.6rem 0.9rem;
+    font-size: 0.86rem;
+  }
+
+  .accountPrompt {
+    margin-top: 0.2rem;
+  }
+
+  .forgotHint {
+    font-size: 0.82rem;
+  }
+
   .googleSheet {
-    width: min(100%, 420px);
-    max-height: min(90dvh, 640px);
+    width: min(100%, 400px);
+    max-height: min(88dvh, 640px);
     overflow: auto;
-    padding: 1.05rem 0.95rem 1rem;
+    padding: 1rem 0.95rem 0.95rem;
   }
 
   .successGate,
   .successCard {
-    padding-left: 0.75rem;
-    padding-right: 0.75rem;
+    padding-left: 0.85rem;
+    padding-right: 0.85rem;
+  }
+
+  .successCard h2 {
+    font-size: 1.15rem;
+  }
+
+  .successCard p {
+    font-size: 0.86rem;
   }
 }
 
 @media (max-width: 420px) {
   .shell {
-    padding: 0.6rem 0.55rem 0.95rem;
+    padding:
+      calc(0.7rem + var(--safe-top, 0px))
+      calc(1rem + var(--safe-right, 0px))
+      calc(1rem + var(--safe-bottom, 0px))
+      calc(1rem + var(--safe-left, 0px));
+  }
+
+  .layout {
+    gap: 0.6rem;
+    max-width: 100%;
   }
 
   .card {
-    padding: 1rem 0.85rem 0.95rem;
+    padding: 1.1rem 1rem 1.05rem;
   }
 
-  .ssoRow {
-    grid-template-columns: 1fr;
+  .card h2 {
+    font-size: 1.05rem;
+  }
+
+  .ssoBtn {
+    font-size: 0.84rem;
+  }
+}
+
+@media (max-width: 640px) and (max-height: 700px) {
+  .shell {
+    justify-content: flex-start;
+  }
+
+  .layout {
+    gap: 0.5rem;
+  }
+
+  .hero h1 {
+    font-size: 1.18rem;
+  }
+
+  .card {
+    padding: 1rem 0.95rem 0.95rem;
+  }
+
+  .cardBrand {
+    margin-bottom: 0.4rem;
+  }
+
+  .card h2 {
+    font-size: 1.02rem;
+    margin-bottom: 0.55rem;
+  }
+
+  .form {
+    gap: 0.6rem;
+  }
+
+  .field input,
+  .inputWithIcon input {
+    min-height: 2.65rem;
+    padding-top: 0.68rem;
+    padding-bottom: 0.68rem;
+  }
+
+  .submit {
+    min-height: 2.65rem;
+    padding: 0.72rem 0.95rem;
+  }
+
+  .ssoBtn {
+    min-height: 2.5rem;
+    font-size: 0.82rem;
   }
 }

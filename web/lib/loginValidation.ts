@@ -63,6 +63,40 @@ export function validateReset(fields: ResetFields): FieldErrors<"username" | "ne
   return errors;
 }
 
+export type SignupFields = {
+  fullName: string;
+  username: string;
+  password: string;
+  confirmPassword: string;
+};
+
+export function validateFullName(value: string): string | undefined {
+  const trimmed = value.trim();
+  if (!trimmed) return "Full name is required.";
+  if (trimmed.length < 2) return "Enter your full name.";
+  return undefined;
+}
+
+export function validateSignup(
+  fields: SignupFields,
+): FieldErrors<"fullName" | "username" | "password" | "confirmPassword"> {
+  const errors: FieldErrors<"fullName" | "username" | "password" | "confirmPassword"> = {};
+  const nameError = validateFullName(fields.fullName);
+  const usernameError = validateUsernameOrEmail(fields.username);
+  const passwordError = validatePassword(fields.password);
+  if (nameError) errors.fullName = nameError;
+  if (usernameError) errors.username = usernameError;
+  if (passwordError) errors.password = passwordError;
+
+  if (!fields.confirmPassword) {
+    errors.confirmPassword = "Confirm your password.";
+  } else if (fields.password !== fields.confirmPassword) {
+    errors.confirmPassword = "Passwords do not match.";
+  }
+
+  return errors;
+}
+
 export function hasFieldErrors(errors: object): boolean {
   return Object.keys(errors).length > 0;
 }

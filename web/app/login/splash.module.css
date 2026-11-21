@@ -50,15 +50,15 @@
 
 @media (max-width: 640px) {
   .mascotWrap {
-    padding: 0.35rem 1rem 1.1rem;
+    padding: 0.25rem 0.85rem 0.85rem;
   }
 
   .brandMark {
-    width: clamp(96px, 34vw, 132px);
+    width: clamp(88px, 30vw, 120px);
   }
 
   .brandTag {
-    font-size: 0.76rem;
+    font-size: 0.74rem;
   }
 }
 

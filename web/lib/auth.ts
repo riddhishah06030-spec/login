@@ -101,10 +101,16 @@ export const DEMO_USERS: DemoUser[] = [
 const SESSION_KEY = "pms.auth.session";
 const REMEMBER_KEY = "pms.auth.rememberUsername";
 const PASSWORD_OVERRIDES_KEY = "pms.auth.passwordOverrides";
+const REGISTERED_ACCOUNTS_KEY = "pms.auth.registeredAccounts";
 
 export type AuthResult =
   | { ok: true; session: AuthSession }
   | { ok: false; error: string };
+
+type RegisteredAccount = {
+  password: string;
+  displayName: string;
+};
 
 function getPasswordOverrides(): Record<string, string> {
   if (typeof window === "undefined") return {};
@@ -117,6 +123,38 @@ function getPasswordOverrides(): Record<string, string> {
   }
 }
 
+function getRegisteredAccounts(): Record<string, RegisteredAccount> {
+  if (typeof window === "undefined") return {};
+  try {
+    const raw = localStorage.getItem(REGISTERED_ACCOUNTS_KEY);
+    const accounts = raw ? (JSON.parse(raw) as Record<string, RegisteredAccount>) : {};
+
+    // Migrate older create-account passwords that lived in passwordOverrides.
+    const overrides = getPasswordOverrides();
+    let migrated = false;
+    for (const [username, password] of Object.entries(overrides)) {
+      if (findDemoUser(username) || accounts[username]) continue;
+      accounts[username] = {
+        password,
+        displayName: titleCaseUsername(username),
+      };
+      migrated = true;
+    }
+    if (migrated) {
+      localStorage.setItem(REGISTERED_ACCOUNTS_KEY, JSON.stringify(accounts));
+    }
+
+    return accounts;
+  } catch {
+    return {};
+  }
+}
+
+function saveRegisteredAccounts(accounts: Record<string, RegisteredAccount>) {
+  if (typeof window === "undefined") return;
+  localStorage.setItem(REGISTERED_ACCOUNTS_KEY, JSON.stringify(accounts));
+}
+
 function getEffectivePassword(user: DemoUser): string {
   const overrides = getPasswordOverrides();
   return overrides[user.username] ?? user.password;
@@ -125,6 +163,11 @@ function getEffectivePassword(user: DemoUser): string {
 export function findDemoUser(username: string): DemoUser | undefined {
   const normalized = username.trim().toLowerCase();
   return DEMO_USERS.find((entry) => entry.username === normalized);
+}
+
+export function findRegisteredAccount(username: string): RegisteredAccount | undefined {
+  const normalized = username.trim().toLowerCase();
+  return getRegisteredAccounts()[normalized];
 }
 
 export function resetDemoPassword(
@@ -141,10 +184,27 @@ export function resetDemoPassword(
   if (typeof window === "undefined") {
     return { ok: false, error: "Password reset is only available in the browser." };
   }
-  const overrides = getPasswordOverrides();
-  const key = findDemoUser(normalized)?.username ?? normalized;
-  overrides[key] = newPassword;
-  localStorage.setItem(PASSWORD_OVERRIDES_KEY, JSON.stringify(overrides));
+
+  const demoUser = findDemoUser(normalized);
+  const accounts = getRegisteredAccounts();
+  const registered = accounts[normalized];
+
+  if (!demoUser && !registered) {
+    return { ok: false, error: "No account found. Create an account first." };
+  }
+
+  if (demoUser) {
+    const overrides = getPasswordOverrides();
+    overrides[demoUser.username] = newPassword;
+    localStorage.setItem(PASSWORD_OVERRIDES_KEY, JSON.stringify(overrides));
+    return { ok: true };
+  }
+
+  accounts[normalized] = {
+    password: newPassword,
+    displayName: registered.displayName,
+  };
+  saveRegisteredAccounts(accounts);
   return { ok: true };
 }
 
@@ -156,6 +216,58 @@ function titleCaseUsername(username: string): string {
     .join(" ");
 }
 
+export function createAccount(
+  username: string,
+  password: string,
+  locationId: string,
+  displayName?: string,
+): AuthResult {
+  const normalized = username.trim().toLowerCase();
+  const location = getLocationById(locationId);
+  const trimmedName = displayName?.trim();
+
+  if (!normalized || !password || !locationId) {
+    return { ok: false, error: "Name, email/username, and password are required." };
+  }
+
+  if (password.trim().length > 8) {
+    return { ok: false, error: "Password can be up to 8 characters." };
+  }
+
+  if (!location) {
+    return { ok: false, error: "Select a valid pharmacy location." };
+  }
+
+  if (findDemoUser(normalized)) {
+    return { ok: false, error: "That username is already taken. Try signing in instead." };
+  }
+
+  const accounts = getRegisteredAccounts();
+  if (accounts[normalized]) {
+    return { ok: false, error: "An account with this email or username already exists." };
+  }
+
+  const resolvedName = trimmedName || titleCaseUsername(normalized);
+  accounts[normalized] = {
+    password,
+    displayName: resolvedName,
+  };
+  saveRegisteredAccounts(accounts);
+
+  return {
+    ok: true,
+    session: {
+      username: normalized,
+      displayName: resolvedName,
+      role: "Patient",
+      locationId: location.id,
+      locationName: location.name,
+      locationCity: location.city,
+      provider: "password",
+    },
+  };
+}
+
 export function authenticate(
   username: string,
   password: string,
@@ -164,7 +276,7 @@ export function authenticate(
   const normalized = username.trim().toLowerCase();
   const user = DEMO_USERS.find((entry) => entry.username === normalized);
   const location: PharmacyLocation | undefined = getLocationById(locationId);
-  const overrides = getPasswordOverrides();
+  const registered = findRegisteredAccount(normalized);
 
   if (!normalized || !password || !locationId) {
     return { ok: false, error: "Username and password are required." };
@@ -178,7 +290,6 @@ export function authenticate(
     return { ok: false, error: "Select a valid pharmacy location." };
   }
 
-  // Known staff demo accounts keep their roles when password matches.
   if (user) {
     if (getEffectivePassword(user) !== password) {
       return { ok: false, error: "Invalid credentials." };
@@ -196,10 +307,11 @@ export function authenticate(
     };
   }
 
-  // Any other username can sign in as a Patient (demo open login).
-  // If they previously reset a password, require that override.
-  const savedPassword = overrides[normalized];
-  if (savedPassword && savedPassword !== password) {
+  if (!registered) {
+    return { ok: false, error: "No account found. Create an account first." };
+  }
+
+  if (registered.password !== password) {
     return { ok: false, error: "Invalid credentials." };
   }
 
@@ -207,11 +319,12 @@ export function authenticate(
     ok: true,
     session: {
       username: normalized,
-      displayName: titleCaseUsername(normalized),
+      displayName: registered.displayName,
       role: "Patient",
       locationId: location.id,
       locationName: location.name,
       locationCity: location.city,
+      provider: "password",
     },
   };
 }

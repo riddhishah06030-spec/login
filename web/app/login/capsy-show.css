@@ -383,11 +383,11 @@
 
 @media (max-width: 640px) {
   .capsyShow svg {
-    width: min(52vw, 190px);
+    width: min(42vw, 160px);
   }
 
   .capsyShow .bar {
-    width: min(50vw, 180px);
+    width: min(40vw, 150px);
   }
 }
 

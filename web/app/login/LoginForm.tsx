@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import {
   authenticate,
   clearRememberedUsername,
+  createAccount,
   getRememberedUsername,
   resetDemoPassword,
   saveRememberedUsername,
@@ -22,9 +23,11 @@ import {
 import {
   PASSWORD_MAX_LENGTH,
   hasFieldErrors,
+  validateFullName,
   validatePassword,
   validateReset,
   validateSignIn,
+  validateSignup,
   validateUsernameOrEmail,
   type FieldErrors,
 } from "@/lib/loginValidation";
@@ -36,15 +39,17 @@ import styles from "./login.module.css";
 const DEFAULT_LOCATION = PHARMACY_LOCATIONS[0]?.id ?? "";
 const SUCCESS_HOLD_MS = 2000;
 
-type Mode = "signin" | "forgot";
+type Mode = "signin" | "forgot" | "signup";
 type SignInErrorKey = "username" | "password";
 type ResetErrorKey = "username" | "newPassword" | "confirmPassword";
+type SignupErrorKey = "fullName" | "username" | "password" | "confirmPassword";
 
 export default function LoginForm() {
   const router = useRouter();
   const [mode, setMode] = useState<Mode>("signin");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [fullName, setFullName] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [remember, setRemember] = useState(true);
@@ -52,7 +57,9 @@ export default function LoginForm() {
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
-  const [fieldErrors, setFieldErrors] = useState<FieldErrors<SignInErrorKey | ResetErrorKey>>({});
+  const [fieldErrors, setFieldErrors] = useState<
+    FieldErrors<SignInErrorKey | ResetErrorKey | SignupErrorKey>
+  >({});
   const [submitting, setSubmitting] = useState(false);
   const [usernameFocused, setUsernameFocused] = useState(false);
   const [passwordFocused, setPasswordFocused] = useState(false);
@@ -64,7 +71,7 @@ export default function LoginForm() {
   const [loginSuccess, setLoginSuccess] = useState(false);
   const [successLeaving, setSuccessLeaving] = useState(false);
 
-  function clearFieldError(key: SignInErrorKey | ResetErrorKey) {
+  function clearFieldError(key: SignInErrorKey | ResetErrorKey | SignupErrorKey) {
     setFieldErrors((current) => {
       if (!current[key]) return current;
       const next = { ...current };
@@ -92,10 +99,24 @@ export default function LoginForm() {
     setMascotMood("idle");
   }
 
+  function openSignup() {
+    setMode("signup");
+    setError("");
+    setSuccess("");
+    setFieldErrors({});
+    setFullName("");
+    setPassword("");
+    setConfirmPassword("");
+    setShowPassword(false);
+    setShowNewPassword(false);
+    setMascotMood("idle");
+  }
+
   function backToSignIn() {
     setMode("signin");
     setError("");
     setFieldErrors({});
+    setFullName("");
     setNewPassword("");
     setConfirmPassword("");
     setShowNewPassword(false);
@@ -148,6 +169,36 @@ export default function LoginForm() {
 
     setSubmitting(true);
     const result = authenticate(username, password, DEFAULT_LOCATION);
+    if (!result.ok) {
+      setError(result.error);
+      setMascotMood("sad");
+      setSubmitting(false);
+      return;
+    }
+
+    saveSession(result.session);
+    finishLogin(result.session.username);
+  }
+
+  function onCreateAccount(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setError("");
+    setSuccess("");
+
+    const nextErrors = validateSignup({
+      fullName,
+      username,
+      password,
+      confirmPassword,
+    });
+    setFieldErrors(nextErrors);
+    if (hasFieldErrors(nextErrors)) {
+      setMascotMood("sad");
+      return;
+    }
+
+    setSubmitting(true);
+    const result = createAccount(username, password, DEFAULT_LOCATION, fullName);
     if (!result.ok) {
       setError(result.error);
       setMascotMood("sad");
@@ -300,11 +351,20 @@ export default function LoginForm() {
               mood={mascotMood}
             />
           </div>
-          <h1>Welcome back!</h1>
-          <p>Manage your pharmacy smartly, safely and simply.</p>
+          <h1>{mode === "signup" ? "Join MapleRx" : "Welcome back!"}</h1>
+          <p>
+            {mode === "signup"
+              ? "Create your account to manage pharmacy care simply and safely."
+              : "Manage your pharmacy smartly, safely and simply."}
+          </p>
         </section>
 
-        <section className={styles.cardWrap} aria-label={mode === "signin" ? "Sign in" : "Reset password"}>
+        <section
+          className={styles.cardWrap}
+          aria-label={
+            mode === "signin" ? "Sign in" : mode === "signup" ? "Create account" : "Reset password"
+          }
+        >
           <div className={styles.card}>
             <div className={styles.cardBrand}>
               <Image
@@ -319,7 +379,13 @@ export default function LoginForm() {
                 Maple<span>Rx</span>
               </p>
             </div>
-            <h2>{mode === "signin" ? "Sign in to your account" : "Reset your password"}</h2>
+            <h2>
+              {mode === "signin"
+                ? "Sign in to your account"
+                : mode === "signup"
+                  ? "Create your account"
+                  : "Reset your password"}
+            </h2>
 
             {mode === "signin" ? (
               <form className={styles.form} onSubmit={onSignIn} noValidate>
@@ -516,6 +582,262 @@ export default function LoginForm() {
                     <span>Continue with Microsoft</span>
                   </button>
                 </div>
+
+                <p className={styles.accountPrompt}>
+                  Don&apos;t have an account?{" "}
+                  <button type="button" className={styles.forgot} onClick={openSignup}>
+                    Create account
+                  </button>
+                </p>
+              </form>
+            ) : mode === "signup" ? (
+              <form className={styles.form} onSubmit={onCreateAccount} noValidate>
+                {error ? (
+                  <div className={styles.error} role="alert">
+                    {error}
+                  </div>
+                ) : null}
+
+                <div className={styles.field}>
+                  <label htmlFor="signup-fullname">Full name</label>
+                  <div className={styles.inputWithIcon}>
+                    <span className={styles.inputIcon} aria-hidden="true">
+                      <svg viewBox="0 0 24 24">
+                        <circle cx="12" cy="9" r="3" fill="none" stroke="currentColor" strokeWidth="1.7" />
+                        <path
+                          d="M6 19c.9-3 2.9-4.5 6-4.5S17.1 16 18 19"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="1.7"
+                          strokeLinecap="round"
+                        />
+                      </svg>
+                    </span>
+                    <input
+                      id="signup-fullname"
+                      name="fullName"
+                      autoComplete="name"
+                      value={fullName}
+                      className={fieldErrors.fullName ? styles.inputInvalid : undefined}
+                      aria-invalid={Boolean(fieldErrors.fullName)}
+                      aria-describedby={fieldErrors.fullName ? "signup-fullname-error" : undefined}
+                      onChange={(event) => {
+                        setFullName(event.target.value);
+                        clearFieldError("fullName");
+                        setError("");
+                      }}
+                      onBlur={() => {
+                        const message = validateFullName(fullName);
+                        if (message) setFieldErrors((current) => ({ ...current, fullName: message }));
+                      }}
+                      placeholder="Alex Patient"
+                      required
+                    />
+                  </div>
+                  {fieldErrors.fullName ? (
+                    <p id="signup-fullname-error" className={styles.fieldError} role="alert">
+                      {fieldErrors.fullName}
+                    </p>
+                  ) : null}
+                </div>
+
+                <div className={styles.field}>
+                  <label htmlFor="signup-username">Email or username</label>
+                  <div className={styles.inputWithIcon}>
+                    <span className={styles.inputIcon} aria-hidden="true">
+                      <svg viewBox="0 0 24 24">
+                        <path
+                          d="M4 7.5A2.5 2.5 0 016.5 5h11A2.5 2.5 0 0120 7.5v9a2.5 2.5 0 01-2.5 2.5h-11A2.5 2.5 0 014 16.5v-9z"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="1.7"
+                        />
+                        <path
+                          d="M5 8l7 5 7-5"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="1.7"
+                          strokeLinecap="round"
+                        />
+                      </svg>
+                    </span>
+                    <input
+                      id="signup-username"
+                      name="username"
+                      autoComplete="username"
+                      value={username}
+                      className={fieldErrors.username ? styles.inputInvalid : undefined}
+                      aria-invalid={Boolean(fieldErrors.username)}
+                      aria-describedby={fieldErrors.username ? "signup-username-error" : undefined}
+                      onChange={(event) => {
+                        setUsername(event.target.value);
+                        clearFieldError("username");
+                        setError("");
+                      }}
+                      onFocus={() => setUsernameFocused(true)}
+                      onBlur={() => {
+                        setUsernameFocused(false);
+                        const message = validateUsernameOrEmail(username);
+                        if (message) setFieldErrors((current) => ({ ...current, username: message }));
+                      }}
+                      placeholder="you@email.com"
+                      required
+                    />
+                  </div>
+                  {fieldErrors.username ? (
+                    <p id="signup-username-error" className={styles.fieldError} role="alert">
+                      {fieldErrors.username}
+                    </p>
+                  ) : null}
+                </div>
+
+                <div className={styles.field}>
+                  <label htmlFor="signup-password">Password</label>
+                  <div className={styles.inputWithIcon}>
+                    <span className={styles.inputIcon} aria-hidden="true">
+                      <svg viewBox="0 0 24 24">
+                        <rect x="6" y="10" width="12" height="9" rx="2" fill="currentColor" opacity="0.25" />
+                        <path
+                          d="M8.5 10V8a3.5 3.5 0 017 0v2"
+                          stroke="currentColor"
+                          strokeWidth="1.7"
+                          fill="none"
+                        />
+                      </svg>
+                    </span>
+                    <input
+                      id="signup-password"
+                      name="password"
+                      type={showPassword ? "text" : "password"}
+                      autoComplete="new-password"
+                      value={password}
+                      className={fieldErrors.password ? styles.inputInvalid : undefined}
+                      aria-invalid={Boolean(fieldErrors.password)}
+                      aria-describedby={fieldErrors.password ? "signup-password-error" : undefined}
+                      maxLength={PASSWORD_MAX_LENGTH}
+                      onChange={(event) => {
+                        setPassword(event.target.value.slice(0, PASSWORD_MAX_LENGTH));
+                        clearFieldError("password");
+                        setError("");
+                      }}
+                      onFocus={() => setPasswordFocused(true)}
+                      onBlur={() => {
+                        setPasswordFocused(false);
+                        const message = validatePassword(password);
+                        if (message) setFieldErrors((current) => ({ ...current, password: message }));
+                      }}
+                      placeholder="Enter your password"
+                      required
+                    />
+                    <button
+                      type="button"
+                      className={styles.togglePassword}
+                      onMouseDown={(event) => event.preventDefault()}
+                      onClick={() => setShowPassword((value) => !value)}
+                      aria-label={showPassword ? "Hide password" : "Show password"}
+                    >
+                      <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path
+                          d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="1.7"
+                        />
+                        <circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" strokeWidth="1.7" />
+                      </svg>
+                    </button>
+                  </div>
+                  {fieldErrors.password ? (
+                    <p id="signup-password-error" className={styles.fieldError} role="alert">
+                      {fieldErrors.password}
+                    </p>
+                  ) : null}
+                </div>
+
+                <div className={styles.field}>
+                  <label htmlFor="signup-confirm-password">Confirm password</label>
+                  <div className={styles.inputWithIcon}>
+                    <span className={styles.inputIcon} aria-hidden="true">
+                      <svg viewBox="0 0 24 24">
+                        <rect x="6" y="10" width="12" height="9" rx="2" fill="currentColor" opacity="0.25" />
+                        <path
+                          d="M8.5 10V8a3.5 3.5 0 017 0v2"
+                          stroke="currentColor"
+                          strokeWidth="1.7"
+                          fill="none"
+                        />
+                      </svg>
+                    </span>
+                    <input
+                      id="signup-confirm-password"
+                      name="confirmPassword"
+                      type={showNewPassword ? "text" : "password"}
+                      autoComplete="new-password"
+                      value={confirmPassword}
+                      className={fieldErrors.confirmPassword ? styles.inputInvalid : undefined}
+                      aria-invalid={Boolean(fieldErrors.confirmPassword)}
+                      aria-describedby={
+                        fieldErrors.confirmPassword ? "signup-confirm-password-error" : undefined
+                      }
+                      maxLength={PASSWORD_MAX_LENGTH}
+                      onChange={(event) => {
+                        setConfirmPassword(event.target.value.slice(0, PASSWORD_MAX_LENGTH));
+                        clearFieldError("confirmPassword");
+                        setError("");
+                      }}
+                      onFocus={() => setPasswordFocused(true)}
+                      onBlur={() => {
+                        setPasswordFocused(false);
+                        if (!confirmPassword) {
+                          setFieldErrors((current) => ({
+                            ...current,
+                            confirmPassword: "Confirm your password.",
+                          }));
+                        } else if (password !== confirmPassword) {
+                          setFieldErrors((current) => ({
+                            ...current,
+                            confirmPassword: "Passwords do not match.",
+                          }));
+                        }
+                      }}
+                      placeholder="Re-enter password"
+                      required
+                    />
+                    <button
+                      type="button"
+                      className={styles.togglePassword}
+                      onMouseDown={(event) => event.preventDefault()}
+                      onClick={() => setShowNewPassword((value) => !value)}
+                      aria-label={showNewPassword ? "Hide password" : "Show password"}
+                    >
+                      <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path
+                          d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="1.7"
+                        />
+                        <circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" strokeWidth="1.7" />
+                      </svg>
+                    </button>
+                  </div>
+                  {fieldErrors.confirmPassword ? (
+                    <p id="signup-confirm-password-error" className={styles.fieldError} role="alert">
+                      {fieldErrors.confirmPassword}
+                    </p>
+                  ) : null}
+                </div>
+
+                <button className={styles.submit} type="submit" disabled={submitting}>
+                  {submitting ? "Creating account…" : "Create account"}
+                </button>
+
+                <p className={styles.accountPrompt}>
+                  Already have an account?{" "}
+                  <button type="button" className={styles.forgot} onClick={backToSignIn}>
+                    Sign in
+                  </button>
+                </p>
               </form>
             ) : (
               <form className={styles.form} onSubmit={onResetPassword} noValidate>
@@ -526,7 +848,7 @@ export default function LoginForm() {
                 ) : null}
 
                 <p className={styles.forgotHint}>
-                  Enter your username and choose a new password for this demo account.
+                  Enter the email or username from your created account, then choose a new password.
                 </p>
 
                 <div className={styles.field}>
