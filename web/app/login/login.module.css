@@ -648,8 +648,9 @@
 
   .hero {
     order: 0;
-    padding: 0;
+    padding: 0.55rem 0.75rem 0;
     flex-shrink: 0;
+    overflow: visible;
   }
 
   .hero h1 {
@@ -664,7 +665,9 @@
   }
 
   .mascot {
-    margin-bottom: 0.15rem;
+    margin-bottom: 0.35rem;
+    overflow: visible;
+    min-height: 236px;
   }
 
   .cardWrap {
@@ -721,8 +724,13 @@
   }
 
   .layout {
-    gap: 0.7rem;
+    gap: 0.55rem;
     max-width: 370px;
+  }
+
+  .mascot {
+    min-height: 216px;
+    margin-bottom: 0.1rem;
   }
 
   .hero h1 {
@@ -878,7 +886,11 @@
   }
 
   .layout {
-    gap: 0.5rem;
+    gap: 0.45rem;
+  }
+
+  .mascot {
+    min-height: 184px;
   }
 
   .hero h1 {

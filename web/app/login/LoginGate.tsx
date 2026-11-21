@@ -1,7 +1,8 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { consumeSkipSplash } from "@/lib/auth";
 import CapsyShow from "./CapsyShow";
 import LoginForm from "./LoginForm";
@@ -12,21 +13,33 @@ const PRELOAD_LOGIN_MS = 4200;
 const FADE_MS = 650;
 
 export default function LoginGate() {
-  const skipRef = useRef(false);
-  const [showLogin, setShowLogin] = useState(false);
-  const [splashVisible, setSplashVisible] = useState(true);
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const skipFromUrl = searchParams.get("from") === "logout";
+  const skipRef = useRef(skipFromUrl);
+  const [showLogin, setShowLogin] = useState(skipFromUrl);
+  const [splashVisible, setSplashVisible] = useState(!skipFromUrl);
   const [splashFading, setSplashFading] = useState(false);
 
-  useLayoutEffect(() => {
-    skipRef.current = consumeSkipSplash();
-    if (!skipRef.current) return;
-    setShowLogin(true);
-    setSplashVisible(false);
-    setSplashFading(false);
-  }, []);
+  const shouldSkipSplash = useMemo(
+    () => skipFromUrl || skipRef.current,
+    [skipFromUrl],
+  );
 
   useEffect(() => {
-    if (skipRef.current) return;
+    if (!skipRef.current && (skipFromUrl || consumeSkipSplash())) {
+      skipRef.current = true;
+      setShowLogin(true);
+      setSplashVisible(false);
+      setSplashFading(false);
+    }
+
+    if (skipRef.current || shouldSkipSplash) {
+      if (typeof window !== "undefined" && window.location.search.includes("from=logout")) {
+        router.replace("/login", { scroll: false });
+      }
+      return;
+    }
 
     const preloadTimer = window.setTimeout(() => {
       setShowLogin(true);
@@ -45,7 +58,7 @@ export default function LoginGate() {
       window.clearTimeout(fadeTimer);
       window.clearTimeout(doneTimer);
     };
-  }, []);
+  }, [router, skipFromUrl, shouldSkipSplash]);
 
   return (
     <div className={styles.gate}>

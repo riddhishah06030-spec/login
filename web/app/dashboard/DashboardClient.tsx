@@ -531,7 +531,7 @@ export default function DashboardClient() {
 
     const goTimer = window.setTimeout(() => {
       markSkipSplash();
-      window.location.assign("/login");
+      window.location.assign("/login?from=logout");
     }, LOGOUT_HOLD_MS);
 
     return () => {
