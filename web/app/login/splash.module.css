@@ -48,6 +48,20 @@
   transition: transform 0.65s ease, opacity 0.65s ease;
 }
 
+@media (max-width: 640px) {
+  .mascotWrap {
+    padding: 0.35rem 1rem 1.1rem;
+  }
+
+  .brandMark {
+    width: clamp(96px, 34vw, 132px);
+  }
+
+  .brandTag {
+    font-size: 0.76rem;
+  }
+}
+
 .fading .mascotWrap {
   transform: scale(0.98);
   opacity: 0.9;

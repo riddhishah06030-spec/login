@@ -381,6 +381,16 @@
   }
 }
 
+@media (max-width: 640px) {
+  .capsyShow svg {
+    width: min(52vw, 190px);
+  }
+
+  .capsyShow .bar {
+    width: min(50vw, 180px);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .capsyShow * {
     animation-duration: 8s !important;

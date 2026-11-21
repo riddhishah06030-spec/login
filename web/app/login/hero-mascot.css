@@ -199,6 +199,28 @@
   }
 }
 
+@media (max-width: 900px) {
+  .heroMascot {
+    width: min(100%, 220px);
+    height: 200px;
+  }
+
+  .heroMascot svg {
+    width: min(62vw, 190px);
+  }
+}
+
+@media (max-width: 640px) {
+  .heroMascot {
+    width: min(100%, 180px);
+    height: 165px;
+  }
+
+  .heroMascot svg {
+    width: min(52vw, 160px);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .heroMascot * {
     animation-duration: 8s !important;
