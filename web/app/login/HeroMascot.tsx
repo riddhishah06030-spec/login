@@ -1,9 +1,7 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import "./hero-mascot.css";
-
-type Mood = "idle" | "cover" | "peek" | "wave" | "sad" | "happy";
 
 type HeroMascotProps = {
   username: string;
@@ -14,209 +12,362 @@ type HeroMascotProps = {
   mood: "idle" | "sad" | "happy";
 };
 
+function ease(t: number) {
+  return t * t * (3 - 2 * t);
+}
+
 export default function HeroMascot({
   username,
-  passwordLength,
+  passwordLength: _passwordLength,
   showPassword,
   usernameFocused,
   passwordFocused,
   mood,
 }: HeroMascotProps) {
-  const heroRef = useRef<HTMLDivElement>(null);
-  const bumpRef = useRef<SVGGElement>(null);
-  const [act, setAct] = useState<Mood>("wave");
-  const busyRef = useRef(false);
+  void _passwordLength;
+  const uid = useId().replace(/:/g, "");
+  const wrapRef = useRef<HTMLDivElement>(null);
+  const coverLRef = useRef<SVGGElement>(null);
+  const coverRRef = useRef<SVGGElement>(null);
+  const armLRef = useRef<SVGGElement>(null);
+  const armRRef = useRef<SVGGElement>(null);
+  const animRef = useRef({ p: 0, q: 0, tp: 0, tq: 0, raf: 0 });
+  const [flip, setFlip] = useState(false);
+  const [moodClass, setMoodClass] = useState("");
 
-  function look(x: number, y: number) {
-    heroRef.current?.style.setProperty("--ex", `${x}px`);
-    heroRef.current?.style.setProperty("--ey", `${y}px`);
+  const covering = passwordFocused;
+  const peeking = passwordFocused && showPassword;
+  const watching = usernameFocused && !passwordFocused;
+
+  function renderCover() {
+    const state = animRef.current;
+    const y = (1 - ease(state.p)) * 70;
+    const a = ease(state.q) * 48;
+    coverLRef.current?.setAttribute("transform", `translate(0 ${y})`);
+    coverRRef.current?.setAttribute("transform", `translate(0 ${y}) rotate(${a} 249 200)`);
+    const opacity = String(Math.min(1, state.p * 2));
+    if (coverLRef.current) coverLRef.current.style.opacity = opacity;
+    if (coverRRef.current) coverRRef.current.style.opacity = opacity;
+    const armOpacity = String(1 - Math.min(1, state.p * 3));
+    if (armLRef.current) armLRef.current.style.opacity = armOpacity;
+    if (armRRef.current) armRRef.current.style.opacity = armOpacity;
   }
 
-  function bump() {
-    const node = bumpRef.current;
-    if (!node) return;
-    node.classList.remove("bump");
-    void node.getBoundingClientRect();
-    node.classList.add("bump");
+  function tick() {
+    const state = animRef.current;
+    state.p += (state.tp - state.p) * 0.18;
+    state.q += (state.tq - state.q) * 0.18;
+    if (Math.abs(state.tp - state.p) < 0.004) state.p = state.tp;
+    if (Math.abs(state.tq - state.q) < 0.004) state.q = state.tq;
+    renderCover();
+    if (state.p !== state.tp || state.q !== state.tq) {
+      state.raf = requestAnimationFrame(tick);
+    }
   }
+
+  function setCover(on: boolean, peek: boolean) {
+    const state = animRef.current;
+    state.tp = on ? 1 : 0;
+    state.tq = peek ? 1 : 0;
+    cancelAnimationFrame(state.raf);
+    state.raf = requestAnimationFrame(tick);
+  }
+
+  useEffect(() => {
+    setCover(covering, peeking);
+  }, [covering, peeking]);
+
+  useEffect(() => {
+    if (!watching) {
+      wrapRef.current?.style.setProperty("--gx", "0px");
+      return;
+    }
+    const x = Math.max(-7, Math.min(7, (username.length / 22) * 14 - 7));
+    wrapRef.current?.style.setProperty("--gx", `${x}px`);
+  }, [watching, username]);
 
   useEffect(() => {
     if (mood === "sad") {
-      busyRef.current = true;
-      setAct("sad");
-      look(0, 6);
-      const timer = window.setTimeout(() => {
-        busyRef.current = false;
-      }, 2800);
+      setMoodClass("sad");
+      const timer = window.setTimeout(() => setMoodClass(""), 2800);
       return () => window.clearTimeout(timer);
     }
     if (mood === "happy") {
-      busyRef.current = true;
-      setAct("happy");
-      look(0, 0);
-      const timer = window.setTimeout(() => {
-        busyRef.current = false;
-      }, 2800);
+      setMoodClass("happy");
+      const timer = window.setTimeout(() => setMoodClass(""), 2800);
       return () => window.clearTimeout(timer);
     }
+    setMoodClass("");
   }, [mood]);
 
   useEffect(() => {
-    if (busyRef.current) return;
-    if (passwordFocused) {
-      if (showPassword) {
-        setAct("peek");
-        look(-4, 8);
-      } else {
-        setAct("cover");
-        look(0, 0);
-      }
-      return;
-    }
-    if (usernameFocused) {
-      setAct("idle");
-      const ratio = Math.min(username.length, 22) / 22;
-      look(-10 + 20 * ratio, 7);
-      return;
-    }
-    setAct("wave");
-    look(0, 0);
-  }, [passwordFocused, showPassword, usernameFocused, username]);
+    return () => cancelAnimationFrame(animRef.current.raf);
+  }, []);
 
-  useEffect(() => {
-    if (usernameFocused || passwordFocused) bump();
-  }, [username, passwordLength, usernameFocused, passwordFocused]);
+  function onFlip() {
+    setFlip(false);
+    requestAnimationFrame(() => setFlip(true));
+  }
 
-  useEffect(() => {
-    const onMove = (event: MouseEvent) => {
-      if (busyRef.current || usernameFocused || passwordFocused) return;
-      const rect = heroRef.current?.querySelector("svg")?.getBoundingClientRect();
-      if (!rect) return;
-      const cx = rect.left + rect.width / 2;
-      const cy = rect.top + rect.height * 0.55;
-      const dx = Math.max(-1, Math.min(1, (event.clientX - cx) / (window.innerWidth / 2)));
-      const dy = Math.max(-1, Math.min(1, (event.clientY - cy) / (window.innerHeight / 2)));
-      look(dx * 12, dy * 8);
-    };
-    document.addEventListener("mousemove", onMove);
-    return () => document.removeEventListener("mousemove", onMove);
-  }, [usernameFocused, passwordFocused]);
+  const className = [
+    "heroMascot",
+    covering ? "covering" : "",
+    peeking ? "peek" : "",
+    watching ? "watching" : "",
+    flip ? "flip" : "",
+    moodClass,
+  ]
+    .filter(Boolean)
+    .join(" ");
 
-  useEffect(() => {
-    const timer = window.setInterval(() => {
-      if (busyRef.current || usernameFocused || passwordFocused) return;
-      if (act !== "idle" && act !== "wave") return;
-      setAct("wave");
-      window.setTimeout(() => {
-        setAct((current) => (current === "wave" ? "idle" : current));
-      }, 2600);
-    }, 7000);
-    return () => window.clearInterval(timer);
-  }, [act, usernameFocused, passwordFocused]);
-
-  const stageClass = act === "idle" ? "" : act;
+  const shoeClip = `cp-shoe-clip-${uid}`;
+  const shoe = `cp-shoe-${uid}`;
 
   return (
-    <div className="heroMascot" ref={heroRef} aria-hidden="false">
-      <svg id="hero" viewBox="40 0 412 560" role="img" aria-label="PMS mascot">
-        <g id="hstage" className={stageClass}>
-          <ellipse id="hshadow" cx="246" cy="538" rx="88" ry="12" fill="#9fd4bf" opacity="0.55" />
+    <div
+      className={className}
+      ref={wrapRef}
+      role="img"
+      aria-label="Capsy, the pharmacy mascot"
+      onClick={onFlip}
+      onAnimationEnd={(event) => {
+        if (event.animationName === "cp-flip") setFlip(false);
+      }}
+    >
+      <svg
+        className="heroMascotSvg"
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="20 -20 340 370"
+        aria-hidden="true"
+      >
+        <defs>
+          <clipPath id={shoeClip}>
+            <path d="M-16 -8 L-16.5 -17 Q-16.5 -21 -12 -21 L2 -21 Q5 -21 7 -18 Q10 -14 17 -12.5 Q25 -11 25 -8 Z" />
+          </clipPath>
+          <g id={shoe}>
+            <path
+              d="M0 -20 Q1 -25 6 -24 Q9.5 -23 8.5 -18 Z"
+              fill="#F5F1E8"
+              stroke="#0F6E56"
+              strokeWidth="1.8"
+              strokeLinejoin="round"
+            />
+            <path
+              d="M-16 -8 L-16.5 -17 Q-16.5 -21 -12 -21 L2 -21 Q5 -21 7 -18 Q10 -14 17 -12.5 Q25 -11 25 -8 Z"
+              fill="#F5F1E8"
+              stroke="#0F6E56"
+              strokeWidth="2"
+              strokeLinejoin="round"
+            />
+            <g clipPath={`url(#${shoeClip})`}>
+              <path d="M-18 -23 L-8 -23 Q-6 -15 -9 -7 L-18 -7 Z" fill="#1D9E75" />
+              <path d="M14 -15 Q11 -10 13 -6 L30 -6 L30 -15 Z" fill="#1D9E75" />
+              <path
+                d="M-5 -12 Q3 -15 10 -9"
+                stroke="#1D9E75"
+                strokeWidth="2"
+                strokeLinecap="round"
+                fill="none"
+                opacity="0.55"
+              />
+            </g>
+            <path
+              d="M-16.5 -17 Q-16.5 -21 -12 -21 L2 -21"
+              stroke="#0F6E56"
+              strokeWidth="3"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              fill="none"
+            />
+            <path
+              d="M5.6 -18 L3.8 -15 M8.8 -15.2 L7 -12.2 M12.5 -12.6 L11 -10.4"
+              stroke="#0F6E56"
+              strokeWidth="1.8"
+              strokeLinecap="round"
+              fill="none"
+            />
+            <rect
+              x="-17.5"
+              y="-9"
+              width="43.5"
+              height="8"
+              rx="4"
+              fill="#ffffff"
+              stroke="#0F6E56"
+              strokeWidth="2"
+            />
+            <path
+              d="M-10 -5 H20"
+              stroke="#cfe3da"
+              strokeWidth="1.6"
+              strokeLinecap="round"
+            />
+          </g>
+        </defs>
 
-          <g id="hm">
-            <g id="hk" ref={bumpRef}>
-              <g id="hb">
-                <g className="foot foot-l">
-                  <rect x="198" y="448" width="12" height="52" rx="6" fill="#1fa074" />
-                  <ellipse cx="186" cy="508" rx="28" ry="12" fill="#127556" />
-                </g>
-                <g className="foot foot-r">
-                  <rect x="278" y="448" width="12" height="52" rx="6" fill="#1fa074" />
-                  <ellipse cx="306" cy="508" rx="28" ry="12" fill="#127556" />
-                </g>
+        <ellipse
+          className="cp-shadow"
+          cx="190"
+          cy="328"
+          rx="62"
+          ry="7"
+          fill="#000"
+          fillOpacity="0.12"
+        />
 
-                <g className="ha l">
-                  <path
-                    d="M128 318 C96 328 78 360 74 398"
-                    fill="none"
-                    stroke="#1fa074"
-                    strokeWidth="14"
-                    strokeLinecap="round"
-                  />
-                  <circle cx="74" cy="404" r="18" fill="#1fa074" />
-                </g>
-                <g className="ha r">
-                  <path
-                    d="M364 300 C408 292 428 248 432 208"
-                    fill="none"
-                    stroke="#1fa074"
-                    strokeWidth="14"
-                    strokeLinecap="round"
-                  />
-                  <circle cx="434" cy="196" r="18" fill="#1fa074" />
-                </g>
+        <g className="cp-flip">
+          <g className="cp-hop">
+            <g className="cp-sway">
+              <g className="cp-leg-l">
+                <path
+                  d="M170 280 L170 308"
+                  stroke="#1D9E75"
+                  strokeWidth="6"
+                  strokeLinecap="round"
+                  fill="none"
+                />
+                <use href={`#${shoe}`} transform="translate(164 323) scale(-1 1)" />
+              </g>
+              <g className="cp-leg-r">
+                <path
+                  d="M210 280 L210 308"
+                  stroke="#1D9E75"
+                  strokeWidth="6"
+                  strokeLinecap="round"
+                  fill="none"
+                />
+                <use href={`#${shoe}`} transform="translate(216 323)" />
+              </g>
 
+              <g className="cp-arm-l" ref={armLRef}>
                 <path
-                  d="M128 230 H364 V360 C364 430 312 474 246 474 C180 474 128 430 128 360 Z"
-                  fill="#f7f4ee"
-                  stroke="#127556"
-                  strokeWidth="7"
+                  d="M131 200 Q106 210 100 232"
+                  stroke="#1D9E75"
+                  strokeWidth="6"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  fill="none"
                 />
+                <circle
+                  cx="99"
+                  cy="236"
+                  r="10"
+                  fill="#F5F1E8"
+                  stroke="#1D9E75"
+                  strokeWidth="3"
+                />
+              </g>
+              <g className="cp-arm-r" ref={armRRef}>
                 <path
-                  d="M128 230 V140 C128 72 176 30 246 30 C316 30 364 72 364 140 V230 Z"
-                  fill="#1fa074"
-                  stroke="#127556"
-                  strokeWidth="7"
+                  d="M249 185 Q282 178 288 140"
+                  stroke="#1D9E75"
+                  strokeWidth="6"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  fill="none"
                 />
-                <rect x="128" y="216" width="236" height="16" fill="#127556" />
-                <rect x="156" y="58" width="18" height="100" rx="9" fill="#fff" opacity=".28" />
-                <path
-                  d="M246 88h26a7 7 0 0 1 7 7v24h12a7 7 0 0 1 7 7v12a7 7 0 0 1-7 7h-12v8a7 7 0 0 1-7 7h-26a7 7 0 0 1-7-7v-8h-12a7 7 0 0 1-7-7v-12a7 7 0 0 1 7-7h12v-24a7 7 0 0 1 7-7z"
-                  fill="#fff"
+                <circle
+                  cx="289"
+                  cy="134"
+                  r="11"
+                  fill="#F5F1E8"
+                  stroke="#1D9E75"
+                  strokeWidth="3"
                 />
+              </g>
 
-                <path
-                  d="M176 278 Q196 268 216 279"
-                  fill="none"
-                  stroke="#2a2a2a"
-                  strokeWidth="4"
-                  strokeLinecap="round"
-                />
-                <path
-                  d="M276 279 Q296 268 316 278"
-                  fill="none"
-                  stroke="#2a2a2a"
-                  strokeWidth="4"
-                  strokeLinecap="round"
-                />
-                <g className="hbl">
-                  <g className="look">
-                    <circle cx="196" cy="312" r="16" fill="#2a2a2a" />
-                    <circle cx="200" cy="306" r="5" fill="#fff" />
-                  </g>
+              <rect x="130" y="50" width="120" height="230" rx="60" fill="#F5F1E8" />
+              <path d="M130 155 V110 A60 60 0 0 1 250 110 V155 Z" fill="#1D9E75" />
+              <rect x="130" y="150" width="120" height="8" fill="#0F6E56" />
+              <rect x="146" y="62" width="10" height="60" rx="5" fill="#fff" opacity="0.35" />
+              <rect
+                x="130"
+                y="50"
+                width="120"
+                height="230"
+                rx="60"
+                fill="none"
+                stroke="#0F6E56"
+                strokeWidth="3"
+              />
+              <g className="cp-cross">
+                <rect x="182" y="82" width="16" height="44" rx="4" fill="#fff" />
+                <rect x="168" y="96" width="44" height="16" rx="4" fill="#fff" />
+              </g>
+
+              <g className="cp-gaze">
+                <g className="cp-eye-l">
+                  <circle cx="165" cy="200" r="9" fill="#2B2B2B" />
+                  <circle cx="168" cy="197" r="3" fill="#fff" />
                 </g>
-                <g className="hbl">
-                  <g className="look">
-                    <circle cx="296" cy="312" r="16" fill="#2a2a2a" />
-                    <circle cx="300" cy="306" r="5" fill="#fff" />
-                  </g>
+                <g className="cp-eye-r">
+                  <circle cx="215" cy="200" r="9" fill="#2B2B2B" />
+                  <circle cx="218" cy="197" r="3" fill="#fff" />
                 </g>
-                <ellipse className="hbs" cx="164" cy="350" rx="16" ry="10" fill="#f7a8a8" />
-                <ellipse className="hbs" cx="328" cy="350" rx="16" ry="10" fill="#f7a8a8" />
+              </g>
+              <g className="cp-brows">
                 <path
-                  className="hsm"
-                  d="M214 348 Q246 378 278 348"
-                  fill="none"
-                  stroke="#2a2a2a"
-                  strokeWidth="5"
+                  d="M155 182 Q165 176 175 182 M205 182 Q215 176 225 182"
+                  stroke="#2B2B2B"
+                  strokeWidth="3"
                   strokeLinecap="round"
+                  fill="none"
                 />
+              </g>
+              <ellipse cx="148" cy="222" rx="10" ry="6" fill="#F4A9A8" />
+              <ellipse cx="232" cy="222" rx="10" ry="6" fill="#F4A9A8" />
+              <g className="cp-mouth">
                 <path
-                  className="hfr"
-                  d="M216 368 Q246 346 276 368"
-                  fill="none"
-                  stroke="#2a2a2a"
-                  strokeWidth="5"
+                  d="M173 220 Q190 242 207 220"
+                  stroke="#2B2B2B"
+                  strokeWidth="3.5"
                   strokeLinecap="round"
+                  fill="none"
+                />
+              </g>
+
+              <g
+                className="cp-cover"
+                ref={coverLRef}
+                transform="translate(0 70)"
+                style={{ opacity: 0 }}
+              >
+                <path
+                  d="M131 200 Q145 188 165 198"
+                  stroke="#1D9E75"
+                  strokeWidth="6"
+                  strokeLinecap="round"
+                  fill="none"
+                />
+                <circle
+                  cx="165"
+                  cy="200"
+                  r="14"
+                  fill="#F5F1E8"
+                  stroke="#1D9E75"
+                  strokeWidth="3"
+                />
+              </g>
+              <g
+                className="cp-cover"
+                ref={coverRRef}
+                transform="translate(0 70)"
+                style={{ opacity: 0 }}
+              >
+                <path
+                  d="M249 185 Q235 176 215 198"
+                  stroke="#1D9E75"
+                  strokeWidth="6"
+                  strokeLinecap="round"
+                  fill="none"
+                />
+                <circle
+                  cx="215"
+                  cy="200"
+                  r="14"
+                  fill="#F5F1E8"
+                  stroke="#1D9E75"
+                  strokeWidth="3"
                 />
               </g>
             </g>

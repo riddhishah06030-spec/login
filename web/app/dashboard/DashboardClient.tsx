@@ -4,7 +4,11 @@ import Image from "next/image";
 import { FormEvent, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { AuthSession, clearSession, getSession } from "@/lib/auth";
+import CapsyThumbsUp from "../login/CapsyThumbsUp";
+import loginStyles from "../login/login.module.css";
 import styles from "./dashboard.module.css";
+
+const LOGOUT_HOLD_MS = 2000;
 
 const NAV_ITEMS = [
   { id: "dashboard", label: "Dashboard", active: true },
@@ -502,6 +506,8 @@ export default function DashboardClient() {
     pricing: true,
     patients: true,
   });
+  const [logoutSuccess, setLogoutSuccess] = useState(false);
+  const [logoutLeaving, setLogoutLeaving] = useState(false);
 
   useEffect(() => {
     const current = getSession();
@@ -515,6 +521,23 @@ export default function DashboardClient() {
     setReady(true);
   }, [router]);
 
+  useEffect(() => {
+    if (!logoutSuccess) return;
+
+    const leaveTimer = window.setTimeout(() => {
+      setLogoutLeaving(true);
+    }, 1400);
+
+    const goTimer = window.setTimeout(() => {
+      router.replace("/login");
+    }, LOGOUT_HOLD_MS);
+
+    return () => {
+      window.clearTimeout(leaveTimer);
+      window.clearTimeout(goTimer);
+    };
+  }, [logoutSuccess, router]);
+
   const initials = useMemo(
     () => (session ? initialsFromName(session.displayName) : "RX"),
     [session],
@@ -522,12 +545,32 @@ export default function DashboardClient() {
 
   function signOut() {
     clearSession();
-    router.replace("/login");
+    setLogoutLeaving(false);
+    setLogoutSuccess(true);
   }
 
   function onNext(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setStep((current) => Math.min(7, current + 1));
+  }
+
+  if (logoutSuccess) {
+    return (
+      <div
+        className={`${loginStyles.successGate}${logoutLeaving ? ` ${loginStyles.successLeaving}` : ""}`}
+        role="status"
+        aria-live="polite"
+        aria-label="Logout successful"
+      >
+        <div className={loginStyles.successCard}>
+          <CapsyThumbsUp
+            className={`${loginStyles.successMascot}${logoutLeaving ? ` ${loginStyles.successMascotLeave}` : ""}`}
+          />
+          <h2>Logout successful!</h2>
+          <p>See you soon…</p>
+        </div>
+      </div>
+    );
   }
 
   if (!ready || !session) {

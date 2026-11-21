@@ -1,196 +1,333 @@
 .heroMascot {
-  --hero-ink: #14332a;
+  --gx: 0px;
   position: relative;
   display: flex;
   justify-content: center;
-  width: min(100%, 300px);
-  height: 260px;
+  align-items: flex-end;
+  width: min(100%, 340px);
+  height: min(380px, 46vh);
   margin: 0 auto;
   background: transparent;
   overflow: visible;
+  cursor: pointer;
 }
 
-.heroMascot svg {
-  width: min(78vw, 240px);
-  height: auto;
+.heroMascotSvg {
+  width: auto;
+  height: 100%;
+  max-width: 100%;
   overflow: visible;
-  align-self: flex-end;
+  display: block;
 }
 
-.heroMascot #hm,
-.heroMascot #hk,
-.heroMascot #hb {
-  transform-origin: 246px 470px;
+.heroMascotSvg * {
+  transform-box: view-box;
 }
 
-.heroMascot #hb {
-  animation: hero-breathe 2.4s ease-in-out infinite;
+.heroMascot .cp-shadow {
+  transform-origin: 190px 328px;
+  animation: cp-shadow 1.6s infinite;
 }
 
-@keyframes hero-breathe {
+.heroMascot .cp-flip {
+  transform-origin: 190px 186px;
+}
+
+.heroMascot.flip .cp-flip {
+  animation: cp-flip 0.95s ease-in-out;
+}
+
+.heroMascot .cp-hop {
+  transform-origin: 190px 323px;
+  animation: cp-hop 1.6s infinite;
+}
+
+.heroMascot .cp-sway {
+  transform-origin: 190px 323px;
+  animation: cp-sway 3.2s ease-in-out infinite;
+}
+
+.heroMascot .cp-leg-l {
+  transform-origin: 170px 280px;
+  animation: cp-legl 1.6s ease-in-out infinite;
+}
+
+.heroMascot .cp-leg-r {
+  transform-origin: 210px 280px;
+  animation: cp-legr 1.6s ease-in-out infinite;
+}
+
+.heroMascot .cp-arm-l {
+  transform-origin: 131px 200px;
+  animation: cp-swing 1.6s ease-in-out infinite;
+  transition: opacity 0.2s;
+}
+
+.heroMascot .cp-arm-r {
+  transform-origin: 249px 185px;
+  animation: cp-wave 4.8s ease-in-out infinite;
+  transition: opacity 0.2s;
+}
+
+.heroMascot:hover .cp-arm-r {
+  animation-duration: 2.4s;
+}
+
+.heroMascot .cp-eye-l {
+  transform-origin: 165px 200px;
+  animation: cp-blink 3.2s ease-in-out infinite;
+}
+
+.heroMascot .cp-eye-r {
+  transform-origin: 215px 200px;
+  animation: cp-blink 3.2s ease-in-out infinite;
+}
+
+.heroMascot .cp-gaze {
+  animation: cp-gaze 6s ease-in-out infinite;
+}
+
+.heroMascot .cp-brows {
+  animation: cp-brows 4.8s ease-in-out infinite;
+}
+
+.heroMascot .cp-mouth {
+  transform-origin: 190px 220px;
+  animation: cp-talk 1.6s ease-in-out infinite;
+}
+
+.heroMascot .cp-cross {
+  transform-origin: 190px 104px;
+  animation: cp-pulse 1.6s ease-in-out infinite;
+}
+
+.heroMascot .cp-cover {
+  pointer-events: none;
+}
+
+.heroMascot.peek .cp-gaze {
+  animation: none;
+  transform: translate(5px, 2px);
+  transition: transform 0.3s ease;
+}
+
+.heroMascot.watching .cp-gaze {
+  animation: none;
+  transform: translate(var(--gx, 0px), 3px);
+  transition: transform 0.25s ease;
+}
+
+.heroMascot.sad .cp-mouth {
+  animation: none;
+}
+
+.heroMascot.sad .cp-hop {
+  animation: cp-shake 0.5s ease-in-out 2;
+}
+
+.heroMascot.happy .cp-hop {
+  animation: cp-celebrate 0.75s ease-in-out 2;
+}
+
+@keyframes cp-shadow {
+  0% {
+    transform: scale(1.08);
+    opacity: 1;
+    animation-timing-function: ease-out;
+  }
+  35% {
+    transform: scale(0.55);
+    opacity: 0.35;
+    animation-timing-function: ease-in;
+  }
+  65% {
+    transform: scale(1.15);
+    opacity: 1;
+    animation-timing-function: ease-out;
+  }
+  100% {
+    transform: scale(1.08);
+    opacity: 1;
+  }
+}
+
+@keyframes cp-flip {
+  0% {
+    transform: translateY(0) rotate(0);
+  }
+  50% {
+    transform: translateY(-20px) rotate(180deg);
+  }
+  100% {
+    transform: translateY(0) rotate(360deg);
+  }
+}
+
+@keyframes cp-hop {
+  0% {
+    transform: translateY(0) scale(1.08, 0.92);
+    animation-timing-function: ease-out;
+  }
+  35% {
+    transform: translateY(-24px) scale(0.95, 1.07);
+    animation-timing-function: ease-in;
+  }
+  65% {
+    transform: translateY(0) scale(1.1, 0.9);
+    animation-timing-function: ease-out;
+  }
+  80% {
+    transform: translateY(0) scale(0.98, 1.02);
+    animation-timing-function: ease-in-out;
+  }
+  100% {
+    transform: translateY(0) scale(1.08, 0.92);
+  }
+}
+
+@keyframes cp-sway {
+  0%,
+  100% {
+    transform: rotate(-3.5deg);
+  }
+  50% {
+    transform: rotate(3.5deg);
+  }
+}
+
+@keyframes cp-legl {
+  0%,
+  100% {
+    transform: rotate(0);
+  }
+  35% {
+    transform: rotate(16deg);
+  }
+  65% {
+    transform: rotate(-5deg);
+  }
+}
+
+@keyframes cp-legr {
+  0%,
+  100% {
+    transform: rotate(0);
+  }
+  35% {
+    transform: rotate(-16deg);
+  }
+  65% {
+    transform: rotate(5deg);
+  }
+}
+
+@keyframes cp-swing {
+  0%,
+  100% {
+    transform: rotate(-6deg);
+  }
+  35% {
+    transform: rotate(24deg);
+  }
+  65% {
+    transform: rotate(-12deg);
+  }
+}
+
+@keyframes cp-wave {
+  0%,
+  50%,
+  100% {
+    transform: rotate(0);
+  }
+  4% {
+    transform: rotate(-22deg);
+  }
+  10% {
+    transform: rotate(16deg);
+  }
+  16% {
+    transform: rotate(-22deg);
+  }
+  22% {
+    transform: rotate(16deg);
+  }
+  28% {
+    transform: rotate(-22deg);
+  }
+  34% {
+    transform: rotate(16deg);
+  }
+  40% {
+    transform: rotate(-18deg);
+  }
+}
+
+@keyframes cp-blink {
+  0%,
+  90%,
+  100% {
+    transform: scaleY(1);
+  }
+  94% {
+    transform: scaleY(0.07);
+  }
+}
+
+@keyframes cp-gaze {
+  0%,
+  28%,
+  58%,
+  100% {
+    transform: translate(0, 0);
+  }
+  34%,
+  50% {
+    transform: translate(5px, 1px);
+  }
+  72%,
+  90% {
+    transform: translate(-5px, 0);
+  }
+}
+
+@keyframes cp-brows {
+  0%,
+  3%,
+  46%,
+  100% {
+    transform: translateY(0);
+  }
+  9%,
+  40% {
+    transform: translateY(-6px);
+  }
+}
+
+@keyframes cp-talk {
   0%,
   100% {
     transform: scale(1, 1);
   }
-  50% {
-    transform: scale(1.02, 0.985);
+  35% {
+    transform: scale(1.1, 1.28);
+  }
+  65% {
+    transform: scale(0.96, 0.9);
   }
 }
 
-.heroMascot #hk.bump {
-  animation: hero-bump 0.2s ease-out;
-}
-
-@keyframes hero-bump {
-  50% {
-    transform: translateY(-7px) scale(0.98, 1.03);
-  }
-}
-
-.heroMascot .hbl {
-  transform-box: fill-box;
-  transform-origin: center;
-  animation: hero-blink 3.6s infinite;
-}
-
-@keyframes hero-blink {
-  0%,
-  92%,
-  100% {
-    transform: scaleY(1);
-  }
-  95% {
-    transform: scaleY(0.1);
-  }
-}
-
-.heroMascot .look {
-  transform: translate(var(--ex, 0px), var(--ey, 0px));
-  transition: transform 0.18s ease-out;
-}
-
-.heroMascot .hbs {
-  transition: opacity 0.3s;
-}
-
-.heroMascot .hfr {
-  display: none;
-}
-
-/* shoulders tuck into capsule sides */
-.heroMascot .ha {
-  transform-origin: 128px 318px;
-  transition: transform 0.45s cubic-bezier(0.3, 1.4, 0.5, 1);
-}
-
-.heroMascot .ha.r {
-  transform-origin: 364px 300px;
-}
-
-.heroMascot .foot-l {
-  transform-origin: 204px 448px;
-}
-
-.heroMascot .foot-r {
-  transform-origin: 284px 448px;
-}
-
-/* cover eyes with hands */
-.heroMascot .cover .ha.l,
-.heroMascot .peek .ha.l {
-  transform: rotate(-125deg) scale(0.92);
-}
-
-.heroMascot .cover .ha.r {
-  transform: rotate(150deg) scale(0.92);
-}
-
-.heroMascot .peek .ha.r {
-  transform: rotate(108deg) scale(0.92);
-}
-
-/* idle greeting: right hand waves */
-.heroMascot .wave .ha.r {
-  animation: hero-wave 0.48s ease-in-out infinite alternate;
-}
-
-@keyframes hero-wave {
-  from {
-    transform: rotate(-18deg);
-  }
-  to {
-    transform: rotate(22deg);
-  }
-}
-
-.heroMascot .happy .ha.l {
-  transform: rotate(70deg);
-}
-
-.heroMascot .happy .ha.r {
-  transform: rotate(-70deg);
-}
-
-.heroMascot .happy #hm {
-  animation: hero-jump 0.75s ease-in-out 2;
-}
-
-.heroMascot .happy .foot-l {
-  animation: hero-step 0.35s ease-in-out 2;
-}
-
-.heroMascot .happy .foot-r {
-  animation: hero-step 0.35s ease-in-out 2 0.12s;
-}
-
-@keyframes hero-jump {
+@keyframes cp-pulse {
   0%,
   100% {
-    transform: translateY(0) scale(1);
+    transform: scale(1);
   }
-  20% {
-    transform: translateY(0) scale(1.08, 0.92);
-  }
-  50% {
-    transform: translateY(-42px) scale(0.94, 1.06);
+  35% {
+    transform: scale(1.12);
   }
 }
 
-@keyframes hero-step {
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-8px);
-  }
-}
-
-.heroMascot .sad .hsm {
-  display: none;
-}
-
-.heroMascot .sad .hfr {
-  display: block;
-}
-
-.heroMascot .sad .hbs {
-  opacity: 0.25;
-}
-
-.heroMascot .sad #hm {
-  animation: hero-shake 0.5s ease-in-out 2;
-}
-
-.heroMascot .sad .ha.l {
-  transform: rotate(-18deg);
-}
-
-.heroMascot .sad .ha.r {
-  transform: rotate(22deg);
-}
-
-@keyframes hero-shake {
+@keyframes cp-shake {
   25% {
     transform: translateX(-8px) rotate(-3deg);
   }
@@ -199,41 +336,42 @@
   }
 }
 
+@keyframes cp-celebrate {
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+  }
+  20% {
+    transform: translateY(0) scale(1.08, 0.92);
+  }
+  50% {
+    transform: translateY(-36px) scale(0.94, 1.06);
+  }
+}
+
 @media (max-width: 900px) {
   .heroMascot {
-    width: min(100%, 152px);
-    height: 136px;
-  }
-
-  .heroMascot svg {
-    width: min(38vw, 136px);
+    width: min(100%, 150px);
+    height: 148px;
   }
 }
 
 @media (max-width: 640px) {
   .heroMascot {
-    width: min(100%, 120px);
-    height: 108px;
-  }
-
-  .heroMascot svg {
-    width: min(32vw, 112px);
+    width: min(100%, 122px);
+    height: 118px;
   }
 }
 
 @media (max-width: 640px) and (max-height: 700px) {
   .heroMascot {
-    width: min(100%, 100px);
-    height: 90px;
-  }
-
-  .heroMascot svg {
-    width: min(28vw, 96px);
+    width: min(100%, 104px);
+    height: 98px;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .heroMascot * {
-    animation-duration: 8s !important;
+  .heroMascotSvg * {
+    animation: none !important;
   }
 }
